@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Passagem de Plantão — Pronto Socorro</title>
+<title>Hospital Paulo Sacramento — Pronto Socorro</title>
 
 <!-- Scripts do Firebase (Versão Compatível para HTML estático) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -111,63 +111,67 @@ tbody tr.detail-row.is-atencao td { border-top-width: 0 !important; }
 /* DESTAQUE DO LEITO */
 .td-leito { text-align: center; }
 .td-leito strong { display: inline-block; background: #1e3a5f; color: #fff; font-size: 14px; font-weight: 900; padding: 4px 10px; border-radius: 6px; }
-tr.main-row-vazio .td-leito strong { background: #cbd5e1; color: #fff; }
+tr.main-row-vazio .td-leito strong { background: #94a3b8; }
 
-tbody tr.main-row td, tbody tr.main-row-vazio td { padding: 8px 3px; }
-tbody tr.main-row td:first-child, tbody tr.main-row-vazio td:first-child { padding-left: 12px; }
-tbody tr.main-row td:last-child, tbody tr.main-row-vazio td:last-child { padding-right: 12px; }
+/* INPUTS E SELECTS NA LINHA PRINCIPAL */
+tr.main-row td input, tr.main-row td select { 
+    width: 100%; border: 1px solid transparent; background: transparent; 
+    font-size: 12px; padding: 8px 4px; border-radius: 4px; outline: none; transition: .2s; height: 34px;
+}
+tr.main-row td input:hover, tr.main-row td select:hover { border-color: #cbd5e1; background: #fff; }
+tr.main-row td input:focus, tr.main-row td select:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 2px rgba(59,130,246,.1); }
 
-/* Inputs na linha principal */
-.main-row input, .main-row select { width: 100%; height: 28px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 11px; font-family: inherit; outline: none; transition: .2s; background: #fff; }
-.main-row input:focus, .main-row select:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,.1); }
-.main-row input[type="datetime-local"] { height: 22px; padding: 0px 2px; font-size: 10px; line-height: 1; }
-.input-paciente { font-size: 12px !important; font-weight: 800 !important; color: #0f1b2d !important; text-transform: uppercase; }
+.input-paciente { font-weight: 800; color: #0f1b2d; text-transform: uppercase; }
 .input-idade { text-align: center; }
 
-/* Permanencia Bar & Text */
-.td-tempo-wrapper { display: flex; flex-direction: column; justify-content: center; gap: 2px; margin-top: -4px; }
-.perm-bar { width: 100%; height: 4px; background: #cbd5e1; border-radius: 2px; overflow: hidden; }
-.pbar-mini-fill { height: 100%; width: 0; background: #3b82f6; transition: width .5s ease-out; }
-.pbar-mini-fill.critico { background: #ef4444; }
+/* TEMPO DE PERMANÊNCIA COMPACTO */
+.td-tempo-wrapper { display: flex; flex-direction: column; gap: 2px; }
+.td-tempo-wrapper input[type="datetime-local"] { font-size: 11px; padding: 2px; height: 24px; }
+.perm-bar { width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; margin-top: 2px; }
+.pbar-mini-fill { height: 100%; background: #3b82f6; transition: width 0.5s; }
 .pbar-mini-fill.atencao { background: #f59e0b; }
-.perm-text-mini { font-size: 9px; color: #475569; text-align: center; font-weight: 700; line-height: 1; }
+.pbar-mini-fill.critico { background: #ef4444; }
+.perm-text-mini { font-size: 9px; font-weight: 700; color: #475569; text-align: center; }
 
-/* Acoes Column */
-.td-acoes { white-space: nowrap; text-align: center; vertical-align: middle; }
-.acoes-flex { display: flex; gap: 4px; justify-content: center; align-items: center; }
-.btn-expand, .btn-clear { flex: 1; padding: 6px 2px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; transition: .2s; border: 1px solid #cbd5e1; background: #fff; color: #475569; }
-.btn-expand:hover, .btn-clear:hover { background: #e2e8f0; }
+/* BOTÕES DE AÇÃO NA LINHA */
+.acoes-flex { display: flex; gap: 4px; justify-content: center; }
+.btn-expand, .btn-clear { padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; font-size: 10px; font-weight: 700; cursor: pointer; transition: .2s; }
+.btn-expand:hover { background: #f1f5f9; border-color: #94a3b8; }
+.btn-clear:hover { background: #fee2e2; color: #ef4444; border-color: #fca5a5; }
 
-/* ===== DETAIL ROW ===== */
+/* ===== LINHA DE DETALHES (EXPANSÍVEL) ===== */
+tr.detail-row td { padding: 0; border-top: none; border-bottom: 1px solid #cbd5e1; background: #fff; }
+tr.detail-row td:first-child { border-left: 4px solid #3b82f6; border-bottom-left-radius: 8px; }
+tr.detail-row td:last-child { border-right: 1px solid #cbd5e1; border-bottom-right-radius: 8px; }
 tr.detail-row.collapsed { display: none; }
-tr.detail-row td { padding: 0; }
-.detail-flex-container { display: flex; align-items: stretch; gap: 8px; padding: 10px 12px; overflow-x: auto; border-left: 4px solid #3b82f6; border-bottom-left-radius: 8px; }
-tr.is-critico .detail-flex-container { border-left-color: #ef4444; }
-tr.is-atencao .detail-flex-container { border-left-color: #f59e0b; }
 
-.detail-col { display: flex; flex-direction: column; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; }
-.col-origem { flex: 1 1 120px; }
-.col-diag   { flex: 2 1 200px; }
-.col-scores { flex: 1 1 120px; } 
-.col-exames { flex: 2 1 180px; }
-.col-pend   { flex: 2 1 180px; }
-.col-prot   { flex: 0 0 120px; }
-.col-esp    { flex: 0 0 130px; }
+.detail-flex-container { display: flex; gap: 12px; padding: 12px 16px 20px 16px; flex-wrap: wrap; }
+.detail-col { display: flex; flex-direction: column; gap: 6px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
+.detail-col label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
+.detail-col textarea { width: 100%; height: 60px; resize: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 12px; outline: none; transition: .2s; font-family: inherit; }
+.detail-col textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,.1); }
 
-.detail-col label { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; display: block; border-bottom: 1px solid #f1f5f9; padding-bottom: 2px; }
-.detail-col input, .detail-col select, .detail-col textarea { width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; font-family: inherit; outline: none; background: #f8fafc; resize: none; flex: 1; }
-.detail-col input:focus, .detail-col select:focus, .detail-col textarea:focus { border-color: #3b82f6; background: #fff; }
+.col-origem { flex: 1; min-width: 100px; }
+.col-diag { flex: 2; min-width: 200px; }
+.col-scores { flex: 1.5; min-width: 150px; }
+.col-exames { flex: 2; min-width: 200px; }
+.col-pend { flex: 2; min-width: 200px; }
+.col-prot { flex: 1.5; min-width: 150px; }
+.col-esp { flex: 1.5; min-width: 150px; }
 
-.tags-edit { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-.tag-edit { padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 10px; cursor: pointer; background: #f8fafc; color: #64748b; font-weight: 600; transition: .2s; text-align: center; flex: 1 1 45%; }
-.tag-edit.on { background: #eff6ff; border-color: #3b82f6; color: #1d4ed8; }
+/* TAGS E PROTOCOLOS */
+.tags-edit { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag-edit { padding: 4px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 10px; font-weight: 600; color: #64748b; cursor: pointer; transition: .2s; background: #fff; }
+.tag-edit:hover { border-color: #94a3b8; }
+.tag-edit.on { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
 
-.input-group-add { display: flex; gap: 4px; margin-bottom: 6px; }
-.btn-add-tag { background: #0f1b2d; color: #fff; border: none; border-radius: 4px; padding: 0 10px; cursor: pointer; font-weight: 900; }
-.btn-add-tag:hover { background: #1e3a5f; }
+.input-group-add { display: flex; gap: 4px; }
+.input-group-add select { flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 11px; padding: 4px; outline: none; }
+.btn-add-tag { background: #0f1b2d; color: #fff; border: none; border-radius: 6px; padding: 0 10px; font-weight: bold; cursor: pointer; }
+.btn-add-tag:hover { background: #1e293b; }
 
-.tags-selected { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.tag-selected { display: inline-flex; align-items: center; background: #e2e8f0; color: #334155; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+.tags-selected { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.tag-selected { background: #e2e8f0; color: #334155; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: 600; }
 .tag-remove { margin-left: 4px; color: #ef4444; cursor: pointer; font-weight: 900; font-size: 9px; }
 .tag-remove:hover { color: #dc2626; }
 
@@ -179,9 +183,8 @@ tr.is-atencao .detail-flex-container { border-left-color: #f59e0b; }
 <!-- TELA DE LOGIN -->
 <div id="login-screen">
     <div class="login-box">
-        <div style="font-size: 48px; margin-bottom: 10px;">🏥</div>
         <h2>Acesso Médico</h2>
-        <p class="subtitle">Pronto Socorro - Passagem de Plantão</p>
+        <p class="subtitle">Hospital Paulo Sacramento - Pronto Socorro</p>
         <input type="email" id="email" placeholder="E-mail cadastrado">
         <input type="password" id="senha" placeholder="Senha">
         <button onclick="fazerLogin()">Entrar no Sistema</button>
@@ -195,8 +198,8 @@ tr.is-atencao .detail-flex-container { border-left-color: #f59e0b; }
         <div class="header-inner">
             <div class="header-logo">🏥</div>
             <div class="header-info">
-                <h1>Passagem de Plantão</h1>
-                <span>Pronto Socorro</span>
+                <h1>Hospital Paulo Sacramento</h1>
+                <span>Pronto Socorro - Passagem de Plantão</span>
             </div>
             <div class="header-meta">
                 <div class="header-date">
@@ -214,9 +217,9 @@ tr.is-atencao .detail-flex-container { border-left-color: #f59e0b; }
         <div class="action-bar">
             <div class="filters">
                 <button class="fb on" onclick="fil(this,'all')">Todos</button>
-                <button class="fb" onclick="fil(this,'emergencia')">Emergência</button>
-                <button class="fb" onclick="fil(this,'observacao')">Observação</button>
-                <button class="fb" onclick="fil(this,'poltronas')">Poltronas</button>
+                <button class="fb" onclick="fil(this,'reavaliacao')">Reavaliação</button>
+                <button class="fb" onclick="fil(this,'enfermaria')">Enfermaria</button>
+                <button class="fb" onclick="fil(this,'uti')">UTI</button>
                 <button class="fb" onclick="fil(this,'vazio')">Vazio</button>
             </div>
             <div style="margin-left:auto; display:flex; gap:8px;">
@@ -229,9 +232,9 @@ tr.is-atencao .detail-flex-container { border-left-color: #f59e0b; }
 
         <div class="counters">
             <span class="counter" style="color:#2563eb" id="cT">0</span> Total &nbsp;
-            <span class="counter" style="color:#ef4444" id="cEm">0</span> Emergência &nbsp;
-            <span class="counter" style="color:#f59e0b" id="cOb">0</span> Observação &nbsp;
-            <span class="counter" style="color:#10b981" id="cPo">0</span> Poltronas &nbsp;
+            <span class="counter" style="color:#f59e0b" id="cRe">0</span> Reavaliação &nbsp;
+            <span class="counter" style="color:#10b981" id="cEn">0</span> Enfermaria &nbsp;
+            <span class="counter" style="color:#ef4444" id="cUti">0</span> UTI &nbsp;
             <span class="counter" style="color:#9ca3af" id="cV">0</span> Vazios
         </div>
 
@@ -247,7 +250,7 @@ tr.is-atencao .detail-flex-container { border-left-color: #f59e0b; }
                             <th>Sistema</th>
                             <th>Local</th>
                             <th>Tempo</th>
-                            <th>Alocação</th>
+                            <th>Status</th>
                             <th>Destino</th>
                             <th>Ações</th>
                         </tr>
@@ -295,10 +298,10 @@ var df_options = [
 ];
 var prot_options = ['Sepse', 'Dor Toracica', 'AVC', 'TEP', 'Trauma'];
 var esp_options = ['Clinica Medica', 'Cir geral', 'Ortopedia', 'Cardiologia', 'Telecardio', 'Neurologia', 'Pediatria'];
-var al_options = [
-    {val:'emergencia', txt:'Emergência'}, 
-    {val:'observacao', txt:'Observação'}, 
-    {val:'poltronas', txt:'Poltronas'}
+var st_options = [
+    {val:'estavel', txt:'Estável'}, 
+    {val:'atencao', txt:'Atenção'}, 
+    {val:'critico', txt:'Crítico'}
 ];
 
 // ===== FUNÇÕES DE AUTENTICAÇÃO =====
@@ -322,11 +325,11 @@ auth.onAuthStateChanged(function(user) {
     if (user) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-content').style.display = 'block';
-        iniciarBancoDeDados(); // Conecta ao Firestore após o login
+        iniciarBancoDeDados(); 
     } else {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('app-content').style.display = 'none';
-        if(unsubscribeDB) unsubscribeDB(); // Para de ouvir o banco se deslogar
+        if(unsubscribeDB) unsubscribeDB(); 
     }
 });
 
@@ -336,15 +339,13 @@ var unsubscribeDB = null;
 function iniciarBancoDeDados() {
     if(unsubscribeDB) unsubscribeDB();
 
-    // Ouve as mudanças no documento 'plantao' em tempo real
     unsubscribeDB = db.collection('sistema').doc('plantao').onSnapshot(function(doc) {
         if (doc.exists) {
             var data = doc.data();
             ST = JSON.parse(data.leitos || '[]');
             turno = data.turno || 'diurno';
         } else {
-            // Se o banco estiver vazio, cria o primeiro leito
-            ST = [{n:1, pac:'', idade:'', sexo:'F', adm:new Date().toISOString(), cv:'proprio', lc:'sam', ori:'', dg:'', sc:'', pr:'[]', ex:'', es:'[]', pd:'', df:'vazio', al:'emergencia'}];
+            ST = [{n:1, pac:'', idade:'', sexo:'F', adm:new Date().toISOString(), cv:'proprio', lc:'sam', ori:'', dg:'', sc:'', pr:'[]', ex:'', es:'[]', pd:'', df:'vazio', st:'estavel'}];
             turno = 'diurno';
             saveAll(); 
         }
@@ -357,7 +358,6 @@ function iniciarBancoDeDados() {
 
 function saveAll() {
     if(auth.currentUser) {
-        // Salva na nuvem em vez do localStorage
         db.collection('sistema').doc('plantao').set({
             leitos: JSON.stringify(ST),
             turno: turno,
@@ -413,7 +413,7 @@ function rnd() {
         } else if (currentFilter === 'vazio') {
             matchFilter = isVazio;
         } else {
-            matchFilter = (b.al === currentFilter);
+            matchFilter = (b.df === currentFilter);
         }
 
         if(matchFilter) {
@@ -458,8 +458,8 @@ function rnd() {
             h += '<div class="perm-text-mini">'+hh.txt+' de permanência</div>';
             h += '</div></td>';
 
-            h += '<td><select id="al_'+b.n+'" onchange="svC('+b.n+')">';
-            for(var a=0; a<al_options.length; a++) { h += '<option value="'+al_options[a].val+'"'+(b.al===al_options[a].val?' selected':'')+'>'+al_options[a].txt+'</option>'; }
+            h += '<td><select id="st_'+b.n+'" onchange="svC('+b.n+')">';
+            for(var s=0; s<st_options.length; s++) { h += '<option value="'+st_options[s].val+'"'+(b.st===st_options[s].val?' selected':'')+'>'+st_options[s].txt+'</option>'; }
             h += '</select></td>';
 
             h += '<td><select id="df_'+b.n+'" onchange="svC('+b.n+')">';
@@ -532,7 +532,7 @@ function svC(n) {
     b.cv = g('cv_'+n).value; b.lc = g('lc_'+n).value; 
     var admEl = g('adm_'+n); if(admEl && admEl.value) b.adm = new Date(admEl.value).toISOString();
 
-    if(g('al_'+n)) b.al = g('al_'+n).value; 
+    if(g('st_'+n)) b.st = g('st_'+n).value; 
     if(g('df_'+n)) b.df = g('df_'+n).value;
 
     var oriEl = g('ori_'+n); if(oriEl) b.ori = oriEl.value;
@@ -547,7 +547,7 @@ function clC(n) {
     var b = gb(n); if(!b) return;
     b.pac = ''; b.idade = ''; b.ori = ''; b.dg = ''; b.sc = ''; b.ex = ''; b.pd = '';
     b.pr = '[]'; b.es = '[]'; b.df = 'vazio'; b.lc = 'sam'; 
-    b.al = 'emergencia'; 
+    b.st = 'estavel'; 
     saveAll(); rnd(); upSum();
 }
 
@@ -585,7 +585,7 @@ function addLeito() {
     ST.push({
         n: nn, pac: '', idade: '', sexo: 'F', adm: new Date().toISOString(), 
         cv: 'proprio', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', pd: '', 
-        df: 'vazio', al: 'emergencia' 
+        df: 'vazio', st: 'estavel' 
     });
     saveAll(); rnd(); upSum();
 }
@@ -596,22 +596,22 @@ function delLeito() {
 }
 
 function upSum() {
-    var t=ST.length, em=0, ob=0, po=0, v=0;
+    var t=ST.length, re=0, en=0, uti=0, v=0;
     for(var i=0; i<ST.length; i++) {
         var isVazio = (!ST[i].pac || ST[i].pac.trim() === '');
         if(isVazio) {
             v++;
         } else {
-            var al = ST[i].al || 'emergencia';
-            if(al === 'emergencia') em++; 
-            else if(al === 'observacao') ob++; 
-            else if(al === 'poltronas') po++; 
+            var df = ST[i].df || 'vazio';
+            if(df === 'reavaliacao') re++; 
+            else if(df === 'enfermaria') en++; 
+            else if(df === 'uti') uti++; 
         }
     }
     if(g('cT')) g('cT').innerHTML = t; 
-    if(g('cEm')) g('cEm').innerHTML = em; 
-    if(g('cOb')) g('cOb').innerHTML = ob;
-    if(g('cPo')) g('cPo').innerHTML = po; 
+    if(g('cRe')) g('cRe').innerHTML = re; 
+    if(g('cEn')) g('cEn').innerHTML = en;
+    if(g('cUti')) g('cUti').innerHTML = uti; 
     if(g('cV')) g('cV').innerHTML = v;
 }
 
@@ -678,7 +678,7 @@ function exportarWhatsApp() {
     let dataAtual = new Date().toLocaleDateString('pt-BR');
     let turnoAtual = turno === 'diurno' ? '☀️ Diurno' : '🌙 Noturno';
 
-    let texto = `*RESUMO DO PLANTÃO - PS* 🏥\n`;
+    let texto = `*HOSPITAL PAULO SACRAMENTO - PRONTO SOCORRO* 🏥\n`;
     texto += `*Data:* ${dataAtual}\n`;
     texto += `*Turno:* ${turnoAtual}\n`;
     texto += `*Total de Leitos:* ${ST.length}\n\n`;
@@ -695,10 +695,10 @@ function exportarWhatsApp() {
         let destObj = df_options.find(d => d.val === p.df);
         let dest = destObj ? destObj.txt : 'A definir';
 
-        let alocObj = al_options.find(a => a.val === p.al);
-        let aloc = alocObj ? alocObj.txt : 'Emergência';
+        let stObj = st_options.find(s => s.val === p.st);
+        let status = stObj ? stObj.txt : 'Estável';
 
-        texto += `🛏️ *Leito:* ${leito} [${aloc}]\n`;
+        texto += `🛏️ *Leito:* ${leito} [${status}]\n`;
         texto += `👤 *Paciente:* ${nome} ${idade}\n`;
         texto += `🩺 *Diagnóstico:* ${diag}\n`;
         texto += `⏳ *Pendências:* ${pend}\n`;
@@ -715,4 +715,3 @@ function exportarWhatsApp() {
 </script>
 </body>
 </html>
-
