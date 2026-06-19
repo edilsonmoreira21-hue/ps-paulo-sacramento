@@ -217,9 +217,7 @@ var firebaseConfig = {
   appId: "1:544012275784:web:5820f1275310bd56e9887d"
 };
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 var auth = firebase.auth();
 var db = firebase.firestore();
 
@@ -227,7 +225,6 @@ var db = firebase.firestore();
 var ST = [];
 var currentFilter = 'all';
 var turno = 'diurno';
-var dragSource = null;
 
 var cv_options = ['proprio', 'convenio', 'particular', 'sus'];
 var lc_options = [{val:'sam', txt:'SAM - Emergencia'}, {val:'int', txt:'Internados'}];
@@ -270,67 +267,43 @@ function hD(iso) {
     return { txt: hh + 'h ' + mm + 'm', pct: pct, colorClass: cc };
 }
 
-// ===== AUTENTICAÇÃO E BANCO DE DADOS =====
-function fazerLogin() {
-    var e = g('email').value;
-    var s = g('senha').value;
-    g('login-erro').style.display = 'none';
-    auth.signInWithEmailAndPassword(e, s).catch(function(error) {
-        g('login-erro').innerText = 'Erro: ' + error.message;
-        g('login-erro').style.display = 'block';
-    });
-}
-
-function fazerLogout() { auth.signOut(); }
-
-auth.onAuthStateChanged(function(user) {
-    if (user) {
-        g('login-screen').style.display = 'none';
-        g('app-content').style.display = 'block';
-        iniciarBancoDeDados(); 
-    } else {
-        g('login-screen').style.display = 'flex';
-        g('app-content').style.display = 'none';
-        if(unsubscribeDB) unsubscribeDB(); 
-    }
-});
-
-var unsubscribeDB = null;
-
+// ===== BANCO DE DADOS E SALVAMENTO =====
 function iniciarBancoDeDados() {
-    if(unsubscribeDB) unsubscribeDB();
+    db.collection('sistema').doc('leitos').onSnapshot(function(doc) {
+        // Evita atualizar a tela se o usuário estiver digitando (evita perda de foco)
+        var activeTag = document.activeElement ? document.activeElement.tagName : '';
+        var isTyping = (activeTag === 'INPUT' || activeTag === 'TEXTAREA');
 
-    unsubscribeDB = db.collection('sistema').doc('leitos').onSnapshot(function(doc) {
-        // Evita atualizar a tela e roubar o foco se o usuário estiver digitando
-        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
-            return; 
-        }
-
-        if (doc.exists) {
+        if (doc.exists && !isTyping) {
             var data = doc.data();
-            if (data.dados) {
-                ST = JSON.parse(data.dados);
-                rnd();
-                upSum();
-            }
-        } else {
-            ST = [];
-            addLeito();
+            if (data.ST) ST = JSON.parse(data.ST);
+            if (data.turno) turno = data.turno;
+            rnd();
+            upSum();
+            upTurno();
+        } else if (!doc.exists) {
+            ST = []; addLeito();
         }
     });
 }
 
 function saveAll() {
-    if (auth.currentUser) {
-        db.collection('sistema').doc('leitos').set({ dados: JSON.stringify(ST) }, { merge: true });
-    }
+    if (ST.length === 0) return;
+    db.collection('sistema').doc('leitos').set({
+        ST: JSON.stringify(ST),
+        turno: turno,
+        lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(error) {
+        console.error("Erro ao salvar no Firebase: ", error);
+    });
 }
 
-// Trava de segurança: Força o salvamento se o usuário atualizar a página enquanto digita
+// Trava de segurança: Salva os dados caso o usuário aperte F5 ou feche a aba
 window.addEventListener('beforeunload', function (e) {
-    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
-        document.activeElement.blur(); // Dispara o svC() e o saveAll()
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur(); // Força o salvamento do campo atual
     }
+    saveAll();
 });
 
 // ===== RENDERIZAÇÃO DA TABELA =====
@@ -340,29 +313,27 @@ function rnd() {
     for(var i=0; i<ST.length; i++) {
         var b = ST[i];
         var isVazio = (!b.pac || b.pac.trim() === '');
-
-        // Filtros
         var show = false;
-        var df = b.df || 'vazio';
+
         if(currentFilter === 'all') show = true;
         else if(currentFilter === 'vazio' && isVazio) show = true;
-        else if(currentFilter === df && !isVazio) show = true;
+        else if(!isVazio && b.df === currentFilter) show = true;
 
         if(show) {
             var isExpanded = !isVazio; // Leitos ocupados sempre expandidos
             var statusClass = isVazio ? 'main-row-vazio' : (b.st === 'critico' ? 'is-critico' : (b.st === 'atencao' ? 'is-atencao' : 'is-estavel'));
-            var stripeClass = (i % 2 === 0) ? ' even' : ' odd';
 
             var admDateTimeLocal = '';
             if(b.adm) {
                 var dObj = new Date(b.adm);
-                admDateTimeLocal = new Date(dObj.getTime() - (dObj.getTimezoneOffset() * 60000)).toISOString().slice(0,16);
+                dObj.setMinutes(dObj.getMinutes() - dObj.getTimezoneOffset());
+                admDateTimeLocal = dObj.toISOString().slice(0,16);
             }
 
             // Linha Principal
-            h += '<tr class="main-row ' + statusClass + stripeClass + (isExpanded ? ' expanded' : '') + '" draggable="false">';
+            h += '<tr class="main-row ' + statusClass + (isExpanded ? ' expanded' : '') + '">';
             h += '<td class="td-leito" style="text-align: center;"><div class="leito-badge">' + b.n + '</div></td>';
-            h += '<td><input type="text" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+')" style="font-weight: bold; text-transform: uppercase;"></td>';
+            h += '<td><input type="text" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+')" style="font-weight:bold; text-transform:uppercase;"></td>';
             h += '<td><input type="text" id="idade_'+b.n+'" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+')"></td>';
 
             h += '<td><select id="sexo_'+b.n+'" onchange="svC('+b.n+')">';
@@ -382,7 +353,7 @@ function rnd() {
             h += '<td><div class="td-tempo-wrapper">';
             h += '<input type="datetime-local" id="adm_'+b.n+'" value="'+admDateTimeLocal+'" onblur="svC('+b.n+')">';
             h += '<div class="perm-bar"><div class="pbar-mini-fill ' + hh.colorClass + '" style="width:'+hh.pct+'%"></div></div>';
-            h += '<div class="perm-text-mini">'+hh.txt+'</div>';
+            h += '<div class="perm-text-mini">'+hh.txt+' de permanência</div>';
             h += '</div></td>';
 
             h += '<td><select id="st_'+b.n+'" onchange="svC('+b.n+')">';
@@ -430,7 +401,7 @@ function rnd() {
     tmrs();
 }
 
-// ===== INTERAÇÃO E SALVAMENTO =====
+// ===== INTERAÇÃO =====
 function svC(n) {
     var b = gb(n); if(!b) return;
     b.pac = g('pac_'+n).value; b.idade = g('idade_'+n).value; b.sexo = g('sexo_'+n).value;
@@ -539,34 +510,8 @@ function upDateTime() {
     if(g('HT')) g('HT').innerHTML = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 }
 
-// ===== WHATSAPP =====
-function exportarWhatsApp() {
-    if (ST.length === 0) { alert("Não há pacientes para exportar."); return; }
-    let dataAtual = new Date().toLocaleDateString('pt-BR');
-    let turnoAtual = turno === 'diurno' ? '☀️ Diurno' : '🌙 Noturno';
-    let texto = `*HOSPITAL PAULO SACRAMENTO - PRONTO SOCORRO* 🏥\n*Data:* ${dataAtual}\n*Turno:* ${turnoAtual}\n*Total de Leitos:* ${ST.length}\n\n`;
-
-    ST.forEach(p => {
-        if (!p.pac || p.pac.trim() === '') return; 
-        let leito = p.n || 'S/L';
-        let nome = p.pac ? p.pac.toUpperCase() : 'N/I';
-        let idade = p.idade ? `(${p.idade} anos)` : '';
-        let diag = p.dg || 'A esclarecer';
-        let pend = p.pd || 'Nenhuma';
-        let destObj = df_options.find(d => d.val === p.df);
-        let dest = destObj ? destObj.txt : 'A definir';
-        let stObj = st_options.find(s => s.val === p.st);
-        let status = stObj ? stObj.txt : 'Estável';
-
-        texto += `🛏️ *Leito:* ${leito} [${status}]\n👤 *Paciente:* ${nome} ${idade}\n🩺 *Diagnóstico:* ${diag}\n⏳ *Pendências:* ${pend}\n🚑 *Destino:* ${dest}\n-------------------------\n`;
-    });
-
-    navigator.clipboard.writeText(texto).then(() => {
-        alert("✅ Resumo copiado com sucesso! Agora é só colar no WhatsApp.");
-    }).catch(err => { alert("Erro ao copiar o texto: " + err); });
-}
-
 // ===== INICIALIZAÇÃO =====
+iniciarBancoDeDados(); // Inicia a leitura do Firebase ao carregar
 setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 30000);
 </script>
 </body>
