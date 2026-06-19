@@ -158,6 +158,41 @@ tr.detail-row.collapsed { display: none; }
 .tag-selected { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 6px; border-radius: 12px; font-size: 9px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
 .tag-remove { color: #ef4444; cursor: pointer; }
 .spacer-row td { height: 8px; padding: 0; border: none !important; background: transparent !important; }
+
+/* ===== AJUSTE DA BARRA LATERAL CONTÍNUA ===== */
+
+/* Barra azul claro para pacientes estáveis na linha principal */
+tr.main-row td:first-child { 
+    border-left: 4px solid #7dd3fc !important; 
+}
+
+/* Remove o arredondamento inferior quando o card expande para conectar as linhas */
+tr.main-row.expanded td:first-child { 
+    border-bottom-left-radius: 0 !important; 
+}
+
+/* Continua a barra lateral na linha de detalhes */
+tr.detail-row td { 
+    border-left: 4px solid #7dd3fc !important; 
+}
+
+/* Mantém o Vermelho Escuro contínuo para pacientes CRÍTICOS */
+tbody tr.main-row.is-critico td:first-child,
+tbody tr.detail-row.is-critico td { 
+    border-left-color: #8b0000 !important; 
+}
+
+/* Mantém o Laranja/Amarelo contínuo para pacientes em ATENÇÃO */
+tbody tr.main-row.is-atencao td:first-child,
+tbody tr.detail-row.is-atencao td { 
+    border-left-color: #b45309 !important; 
+}
+
+/* Mantém o Cinza para leitos VAZIOS */
+tbody tr.main-row-vazio td:first-child { 
+    border-left-color: #cbd5e1 !important; 
+}
+
 </style>
 </head>
 
