@@ -216,38 +216,71 @@ var firebaseConfig = {
   messagingSenderId: "544012275784",
   appId: "1:544012275784:web:5820f1275310bd56e9887d"
 };
-firebase.initializeApp(firebaseConfig);
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 var auth = firebase.auth();
 var db = firebase.firestore();
 
-// ===== VARIÁVEIS GLOBAIS E LISTAS ATUALIZADAS =====
+// ===== VARIÁVEIS GLOBAIS E OPÇÕES =====
 var ST = [];
 var currentFilter = 'all';
 var turno = 'diurno';
+var dragSource = null;
 
 var cv_options = ['proprio', 'convenio', 'particular', 'sus'];
 var lc_options = [{val:'sam', txt:'SAM - Emergencia'}, {val:'int', txt:'Internados'}];
-var st_options = [{val:'estavel', txt:'Estável'}, {val:'atencao', txt:'Atenção'}, {val:'critico', txt:'Crítico'}];
-var df_options = [{val:'vazio', txt:'Vazio'}, {val:'reavaliacao', txt:'Reavaliação'}, {val:'enfermaria', txt:'Enfermaria'}, {val:'uti', txt:'UTI'}, {val:'alta', txt:'Alta'}, {val:'transferencia', txt:'Transferência'}, {val:'obito', txt:'Óbito'}];
-
-// Listas Solicitadas
+var st_options = [
+    {val:'estavel', txt:'Estável'}, 
+    {val:'atencao', txt:'Atenção'}, 
+    {val:'critico', txt:'Crítico'}
+];
+var df_options = [
+    {val:'vazio', txt:'Vazio'}, 
+    {val:'reavaliacao', txt:'Reavaliação'}, 
+    {val:'enfermaria', txt:'Enfermaria'}, 
+    {val:'uti', txt:'UTI'}, 
+    {val:'alta', txt:'Alta'},
+    {val:'transferencia', txt:'Transferência'},
+    {val:'obito', txt:'Óbito'}
+];
 var prot_options = ['SEPSE', 'AVC', 'DOR TORÁCICA'];
-var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', 'Nefrologia', 'Cirurgia Geral', 'Cirurgia Torácica', 'Cirurgia Vascular', 'Infectologia', 'Neurocirurgia', 'Hemodinâmica', 'Ortopedia', 'Pediatria', 'GO'];
+var esp_options = [
+    'Clinica Medica', 'Cirurgia Geral', 'Ortopedia', 'Cardiologia', 
+    'Telecardio', 'Neurologia', 'Teleneuro', 'Pediatria', 
+    'Psiquiatria', 'Telepsiquiatria', 'Hematologia', 'Telehemato', 
+    'Nefrologia', 'Cirurgia Toracica', 'Neurocirurgia', 'Hemodinâmica', 'GO'
+];
 
-// ===== UTILITÁRIOS =====
+// ===== FUNÇÕES DE UTILIDADE =====
 function g(id) { return document.getElementById(id); }
-function gb(n) { return ST.find(function(x) { return x.n === n; }); }
+function gb(n) { for(var i=0; i<ST.length; i++) { if(ST[i].n === n) return ST[i]; } return null; }
 function esc(s) { return (s||'').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
-// ===== AUTENTICAÇÃO =====
+function hD(iso) {
+    if(!iso) return {txt:'', pct:0, colorClass:''};
+    var d = new Date(iso), n = new Date(), df = Math.floor((n - d)/60000);
+    if(df < 0) df = 0;
+    var hh = Math.floor(df/60), mm = df%60;
+    var pct = Math.min((hh / 24) * 100, 100);
+    var cc = 'estavel';
+    if(hh >= 12 && hh < 24) cc = 'atencao';
+    else if(hh >= 24) cc = 'critico';
+    return { txt: hh + 'h ' + mm + 'm', pct: pct, colorClass: cc };
+}
+
+// ===== AUTENTICAÇÃO E BANCO DE DADOS =====
 function fazerLogin() {
-    var e = g('email').value, s = g('senha').value;
+    var e = g('email').value;
+    var s = g('senha').value;
     g('login-erro').style.display = 'none';
-    auth.signInWithEmailAndPassword(e, s).catch(function(err) {
-        g('login-erro').innerText = 'Erro: ' + err.message;
+    auth.signInWithEmailAndPassword(e, s).catch(function(error) {
+        g('login-erro').innerText = 'Erro: ' + error.message;
         g('login-erro').style.display = 'block';
     });
 }
+
 function fazerLogout() { auth.signOut(); }
 
 auth.onAuthStateChanged(function(user) {
@@ -258,114 +291,109 @@ auth.onAuthStateChanged(function(user) {
     } else {
         g('login-screen').style.display = 'flex';
         g('app-content').style.display = 'none';
+        if(unsubscribeDB) unsubscribeDB(); 
     }
 });
 
-// ===== BANCO DE DADOS (COM PROTEÇÃO DE FOCO) =====
-function iniciarBancoDeDados() {
-    db.collection('sistema').doc('pronto-socorro').onSnapshot(function(doc) {
-        if(doc.exists) {
-            var data = doc.data();
-            if(data.leitos) {
-                // Trava inteligente: só atualiza a tela se o usuário NÃO estiver digitando
-                var active = document.activeElement;
-                var isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+var unsubscribeDB = null;
 
-                if (!isTyping) {
-                    ST = JSON.parse(data.leitos);
-                    turno = data.turno || 'diurno';
-                    upTurno();
-                    rnd();
-                    upSum();
-                }
+function iniciarBancoDeDados() {
+    if(unsubscribeDB) unsubscribeDB();
+
+    unsubscribeDB = db.collection('sistema').doc('leitos').onSnapshot(function(doc) {
+        // Evita atualizar a tela e roubar o foco se o usuário estiver digitando
+        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+            return; 
+        }
+
+        if (doc.exists) {
+            var data = doc.data();
+            if (data.dados) {
+                ST = JSON.parse(data.dados);
+                rnd();
+                upSum();
             }
         } else {
-            if(ST.length === 0) addLeito();
+            ST = [];
+            addLeito();
         }
     });
 }
 
 function saveAll() {
-    if(!auth.currentUser) return;
-    db.collection('sistema').doc('pronto-socorro').set({
-        leitos: JSON.stringify(ST),
-        turno: turno,
-        ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    if (auth.currentUser) {
+        db.collection('sistema').doc('leitos').set({ dados: JSON.stringify(ST) }, { merge: true });
+    }
 }
 
-// Salva ao fechar a aba por segurança
-window.addEventListener('beforeunload', function() { saveAll(); });
-
-// ===== CÁLCULO DE TEMPO =====
-function hD(dStr) {
-    if(!dStr) return {txt:'', pct:0, colorClass:''};
-    var d = new Date(dStr), diff = new Date() - d;
-    if(diff < 0) diff = 0;
-    var h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000);
-    var pct = Math.min((h / 24) * 100, 100);
-    var colorClass = '';
-    if(h >= 12 && h < 24) colorClass = 'atencao';
-    else if(h >= 24) colorClass = 'critico';
-    return { txt: h + 'h ' + m + 'm', pct: pct, colorClass: colorClass };
-}
+// Trava de segurança: Força o salvamento se o usuário atualizar a página enquanto digita
+window.addEventListener('beforeunload', function (e) {
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+        document.activeElement.blur(); // Dispara o svC() e o saveAll()
+    }
+});
 
 // ===== RENDERIZAÇÃO DA TABELA =====
 function rnd() {
-    var tbody = g('tbody');
-    if(!tbody) return;
+    var tbody = g('tbody'); if(!tbody) return;
     var h = '';
     for(var i=0; i<ST.length; i++) {
         var b = ST[i];
         var isVazio = (!b.pac || b.pac.trim() === '');
 
-        // Filtro por Destino Final
+        // Filtros
         var show = false;
+        var df = b.df || 'vazio';
         if(currentFilter === 'all') show = true;
         else if(currentFilter === 'vazio' && isVazio) show = true;
-        else if(currentFilter === b.df && !isVazio) show = true;
+        else if(currentFilter === df && !isVazio) show = true;
 
         if(show) {
-            var statusClass = isVazio ? 'is-vazio' : 'is-' + (b.st || 'estavel');
             var isExpanded = !isVazio; // Leitos ocupados sempre expandidos
+            var statusClass = isVazio ? 'main-row-vazio' : (b.st === 'critico' ? 'is-critico' : (b.st === 'atencao' ? 'is-atencao' : 'is-estavel'));
+            var stripeClass = (i % 2 === 0) ? ' even' : ' odd';
 
             var admDateTimeLocal = '';
             if(b.adm) {
                 var dObj = new Date(b.adm);
                 admDateTimeLocal = new Date(dObj.getTime() - (dObj.getTimezoneOffset() * 60000)).toISOString().slice(0,16);
             }
-            var hh = hD(b.adm);
 
-            h += '<tr class="main-row ' + statusClass + '">';
-            h += '<td style="text-align: center;"><div class="leito-badge">' + b.n + '</div></td>';
-            h += '<td><input type="text" class="input-padrao input-nome" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="Nome do Paciente" onblur="svC('+b.n+')"></td>';
-            h += '<td><input type="number" class="input-padrao" id="idade_'+b.n+'" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+')"></td>';
+            // Linha Principal
+            h += '<tr class="main-row ' + statusClass + stripeClass + (isExpanded ? ' expanded' : '') + '" draggable="false">';
+            h += '<td class="td-leito" style="text-align: center;"><div class="leito-badge">' + b.n + '</div></td>';
+            h += '<td><input type="text" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+')" style="font-weight: bold; text-transform: uppercase;"></td>';
+            h += '<td><input type="text" id="idade_'+b.n+'" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+')"></td>';
 
-            h += '<td><select class="input-padrao" id="sexo_'+b.n+'" onchange="svC('+b.n+')">';
-            h += '<option value="M"'+(b.sexo==='M'?' selected':'')+'>M</option><option value="F"'+(b.sexo==='F'?' selected':'')+'>F</option></select></td>';
+            h += '<td><select id="sexo_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<option value="F"'+(b.sexo==='F'?' selected':'')+'>F</option>';
+            h += '<option value="M"'+(b.sexo==='M'?' selected':'')+'>M</option>';
+            h += '</select></td>';
 
-            h += '<td><select class="input-padrao" id="cv_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<td><select id="cv_'+b.n+'" onchange="svC('+b.n+')">';
             for(var c=0; c<cv_options.length; c++) { h += '<option value="'+cv_options[c]+'"'+(b.cv===cv_options[c]?' selected':'')+'>'+cv_options[c].toUpperCase()+'</option>'; }
             h += '</select></td>';
 
-            h += '<td><select class="input-padrao" id="lc_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<td><select id="lc_'+b.n+'" onchange="svC('+b.n+')">';
             for(var l=0; l<lc_options.length; l++) { h += '<option value="'+lc_options[l].val+'"'+(b.lc===lc_options[l].val?' selected':'')+'>'+lc_options[l].txt+'</option>'; }
             h += '</select></td>';
 
+            var hh = hD(b.adm);
             h += '<td><div class="td-tempo-wrapper">';
-            h += '<input type="datetime-local" class="input-tempo" id="adm_'+b.n+'" value="'+admDateTimeLocal+'" onblur="svC('+b.n+')">';
+            h += '<input type="datetime-local" id="adm_'+b.n+'" value="'+admDateTimeLocal+'" onblur="svC('+b.n+')">';
             h += '<div class="perm-bar"><div class="pbar-mini-fill ' + hh.colorClass + '" style="width:'+hh.pct+'%"></div></div>';
+            h += '<div class="perm-text-mini">'+hh.txt+'</div>';
             h += '</div></td>';
 
-            h += '<td><select class="input-padrao" id="st_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<td><select id="st_'+b.n+'" onchange="svC('+b.n+')">';
             for(var s=0; s<st_options.length; s++) { h += '<option value="'+st_options[s].val+'"'+(b.st===st_options[s].val?' selected':'')+'>'+st_options[s].txt+'</option>'; }
             h += '</select></td>';
 
-            h += '<td><select class="input-padrao" id="df_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<td><select id="df_'+b.n+'" onchange="svC('+b.n+')">';
             for(var d=0; d<df_options.length; d++) { h += '<option value="'+df_options[d].val+'"'+(b.df===df_options[d].val?' selected':'')+'>'+df_options[d].txt+'</option>'; }
             h += '</select></td>';
 
-            h += '<td style="text-align: center;"><div class="acoes-flex"><button class="btn-clear" onclick="clC('+b.n+')">Limpar</button></div></td>';
+            h += '<td class="td-acoes"><div class="acoes-flex"><button class="btn-clear" onclick="clC('+b.n+')">Limpar</button></div></td>';
             h += '</tr>';
 
             // Linha de Detalhes
