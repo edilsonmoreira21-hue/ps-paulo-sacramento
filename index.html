@@ -106,6 +106,19 @@ tr.main-row td input[type="text"], tr.main-row td select {
 }
 .input-paciente { font-weight: bold; text-transform: uppercase; }
 
+.leito-badge {
+    background-color: #0f1b2d; /* Azul escuro */
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px; /* Bordas arredondadas */
+    font-size: 14px;
+    font-weight: 800;
+}
+
 /* TEMPO DE PERMANÊNCIA COMPACTO */
 .td-tempo-wrapper { display: flex; flex-direction: column; gap: 0px; justify-content: center; }
 .td-tempo-wrapper input[type="datetime-local"] { height: 22px; padding: 0 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 10px; outline: none; width: 100%; background: #fff; margin-bottom: 2px; }
@@ -424,7 +437,7 @@ function rnd() {
 
             h += '<tr class="main-row' + (isVazio ? ' main-row-vazio' : '') + criticoClass + (isExpanded ? ' expanded' : '') + '" draggable="true" ondragstart="dragStart(event,'+b.n+')" ondragover="dragOver(event)" ondrop="drop(event,'+b.n+')">';
 
-            h += '<td class="td-leito"><strong>' + b.n + '</strong></td>';
+            h += '<td class="td-leito" style="text-align: center;"><div class="leito-badge">' + b.n + '</div></td>';
             h += '<td><input type="text" class="input-paciente" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="Nome do Paciente" onblur="svC('+b.n+')"></td>';
             h += '<td><input type="text" class="input-idade" id="idade_'+b.n+'" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+')"></td>';
 
