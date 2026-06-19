@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Passagem de Plantão — Hospital Paulo Sacramento</title>
+<title>Hospital Paulo Sacramento — Pronto Socorro</title>
 
 <!-- Scripts do Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -11,243 +11,198 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
+/* ===== RESET E VARIÁVEIS ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; min-height: 100vh; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; min-height: 100vh; }
 
 /* ===== TELA DE LOGIN ===== */
-#login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f1b2d, #1a2f4a, #1e3a5f); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-.login-box { background: #fff; padding: 40px; border-radius: 12px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+#login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f1b2d, #1e3a8a); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+.login-box { background: #fff; padding: 40px; border-radius: 12px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
 .login-box h2 { margin-bottom: 5px; color: #0f1b2d; }
 .login-box .subtitle { font-size: 12px; color: #64748b; margin-bottom: 20px; }
 .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
-.login-box button { width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-.login-box button:hover { background: #2563eb; }
+.login-box button { width: 100%; padding: 12px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.login-box button:hover { background: #1d4ed8; }
 #login-erro { color: #ef4444; font-size: 12px; margin-top: 10px; display: none; }
 
-/* ===== CABEÇALHO E CONTROLES ===== */
-.main-header { background: #0f1b2d; color: #fff; padding: 15px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-.header-inner { max-width: 100%; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-.header-info h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+/* ===== CABEÇALHO ===== */
+.main-header { background: #0f1b2d; color: #fff; padding: 12px 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+.header-inner { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+.header-info h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.5px; }
 .header-info span { font-size: 12px; color: #94a3b8; }
-.header-meta { display: flex; align-items: center; gap: 15px; }
+.header-meta { display: flex; align-items: center; gap: 12px; }
 .header-date { font-size: 12px; font-weight: 600; color: #cbd5e1; text-align: right; }
-.btn-logout { background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: 0.2s; }
-.btn-logout:hover { background: #1e293b; color: #fff; }
-.turno-badge { background: #f59e0b; color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-.turno-badge.noturno { background: #3b82f6; }
 
-/* LARGURA TOTAL DA TELA */
-.container { max-width: 100%; width: 100%; margin: 20px auto; padding: 0 20px; }
+/* ===== BOTÕES PADRONIZADOS ===== */
+.btn-padrao { background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+.btn-padrao:hover { background: #1e293b; color: #fff; border-color: #64748b; }
+.btn-primary { background: #2563eb; color: #fff; border: none; }
+.btn-primary:hover { background: #1d4ed8; color: #fff; }
+.turno-badge { background: #f59e0b; color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; }
+.turno-badge.noturno { background: #312e81; }
 
-.action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-.filters { display: flex; gap: 8px; flex-wrap: wrap; }
-.fb { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; background: #fff; color: #475569; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-.fb:hover { background: #f8fafc; }
+/* ===== CONTADORES E FILTROS ===== */
+.dashboard-bar { background: #fff; padding: 12px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+.filters { display: flex; gap: 8px; }
+.fb { padding: 6px 14px; font-size: 12px; font-weight: 600; border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 20px; cursor: pointer; transition: 0.2s; }
+.fb:hover { background: #f1f5f9; }
 .fb.on { background: #0f1b2d; color: #fff; border-color: #0f1b2d; }
+.counters { display: flex; gap: 16px; font-size: 13px; font-weight: 600; }
+.counter { font-size: 16px; font-weight: 800; }
 
-.btn-act { padding: 8px 14px; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; color: #fff; transition: 0.2s; }
-.btn-add { background: #10b981; } .btn-add:hover { background: #059669; }
-.btn-del { background: #ef4444; } .btn-del:hover { background: #dc2626; }
-.btn-print { background: #64748b; } .btn-print:hover { background: #475569; }
-.btn-whatsapp { background: #64748b; } .btn-whatsapp:hover { background: #475569; } /* Padronizado */
+/* ===== TABELA E CARDS (LARGURA TOTAL) ===== */
+.table-wrap { padding: 20px 24px; width: 100%; }
+table { width: 100%; border-collapse: collapse; background: transparent; }
+thead th { text-align: left; padding: 10px 12px; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
 
-.counters { display: flex; gap: 15px; margin-bottom: 15px; background: #fff; padding: 12px 20px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 12px; flex-wrap: wrap; }
-.counter { font-weight: 700; font-size: 14px; }
+/* ===== LINHAS E CORES DE STATUS ===== */
+tbody tr.main-row td { padding: 10px 12px; border-top: 1px solid #e2e8f0; vertical-align: middle; }
+tbody tr.detail-row td { padding: 0 12px 16px 12px; border-bottom: 1px solid #e2e8f0; }
 
-/* ===== TABELA E CARDS ===== */
-.table-wrap { background: transparent; box-shadow: none; border-radius: 0; overflow: visible; }
-.table-scroll { overflow-x: auto; padding-bottom: 20px; }
-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-th { text-align: left; padding: 0 12px 8px 12px; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; }
+/* Barra Vertical Contínua */
+tbody tr.main-row td:first-child { border-left: 6px solid transparent; }
+tbody tr.detail-row td:first-child { border-left: 6px solid transparent; }
 
-/* LINHA PRINCIPAL (IDENTIFICAÇÃO) - AZUL CLARO */
-tr.main-row td { 
-    padding: 10px 12px; 
-    background: #f0f9ff; /* Azul bem claro */
-    border-top: 1px solid #bae6fd; 
-    border-bottom: 1px solid #bae6fd; 
-    vertical-align: middle; 
-}
-tr.main-row td:first-child { 
-    border-left: 6px solid #3b82f6; /* Borda azul padrão (Estável) */
-    border-top-left-radius: 8px; 
-    border-bottom-left-radius: 8px; 
-}
-tr.main-row td:last-child { 
-    border-right: 1px solid #bae6fd; 
-    border-top-right-radius: 8px; 
-    border-bottom-right-radius: 8px; 
-}
+/* Estável (Azul) */
+tbody tr.main-row.is-estavel td { background: #f0f9ff; }
+tbody tr.detail-row.is-estavel td { background: #f0f9ff; }
+tbody tr.main-row.is-estavel td:first-child, tbody tr.detail-row.is-estavel td:first-child { border-left-color: #3b82f6; }
 
-/* QUADRADO AZUL ESCURO PARA O NÚMERO DO LEITO */
-.td-leito strong {
-    background-color: #0f1b2d;
-    color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 6px;
-    display: inline-block;
-    font-size: 14px;
-    min-width: 35px;
-    text-align: center;
-}
+/* Crítico (Vermelho Escuro) */
+tbody tr.main-row.is-critico td { background: #fef2f2; }
+tbody tr.detail-row.is-critico td { background: #fef2f2; }
+tbody tr.main-row.is-critico td:first-child, tbody tr.detail-row.is-critico td:first-child { border-left-color: #991b1b; }
 
-/* CONECTANDO A BORDA QUANDO EXPANDIDO */
-tr.main-row.expanded td { border-bottom: none; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-tr.main-row.expanded td:first-child { border-bottom-left-radius: 0; }
+/* Atenção (Amarelo) */
+tbody tr.main-row.is-atencao td { background: #fefce8; }
+tbody tr.detail-row.is-atencao td { background: #fefce8; }
+tbody tr.main-row.is-atencao td:first-child, tbody tr.detail-row.is-atencao td:first-child { border-left-color: #f59e0b; }
 
-/* ALTURA UNIFORME DOS INPUTS */
-tr.main-row td input[type="text"], tr.main-row td select, tr.main-row td input[type="datetime-local"] {
-    height: 34px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; outline: none; width: 100%; background: #fff;
-}
-.input-paciente { font-weight: 800; text-transform: uppercase; }
+/* Vazio (Cinza) */
+tbody tr.main-row.is-vazio td { background: #f8fafc; }
+tbody tr.detail-row.is-vazio td { background: #f8fafc; }
+tbody tr.main-row.is-vazio td:first-child, tbody tr.detail-row.is-vazio td:first-child { border-left-color: #cbd5e1; }
 
-/* ALERTA CRÍTICO (VERMELHO ESCURO) */
-tbody tr.main-row.is-critico td { background: #fee2e2 !important; border-color: #fca5a5 !important; }
-tbody tr.main-row.is-critico td:first-child { border-left: 6px solid #8b0000 !important; } /* Vermelho Escuro */
-tbody tr.detail-row.is-critico td { background: #fff !important; border-color: #fca5a5 !important; border-left: 6px solid #8b0000 !important; }
+/* Espaçador entre leitos */
+tr.spacer-row td { height: 12px; background: transparent !important; border: none !important; padding: 0; }
 
-/* ALERTA ATENÇÃO (AMARELO) */
-tbody tr.main-row.is-atencao td { background: #fef3c7 !important; border-color: #fde68a !important; }
-tbody tr.main-row.is-atencao td:first-child { border-left: 6px solid #d97706 !important; }
-tbody tr.detail-row.is-atencao td { background: #fff !important; border-color: #fde68a !important; border-left: 6px solid #d97706 !important; }
+/* ===== ELEMENTOS INTERNOS ===== */
+/* Quadrado Azul Escuro do Leito */
+.leito-badge { background: #1e3a8a; color: #fff; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-/* VAZIO */
-tr.main-row-vazio td { background: #f8fafc !important; border-color: #e2e8f0 !important; }
-tr.main-row-vazio td:first-child { border-left: 6px solid #cbd5e1 !important; }
-tr.main-row-vazio input, tr.main-row-vazio select { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+/* Inputs Padronizados (Mesma Altura) */
+.input-padrao { height: 36px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-family: inherit; width: 100%; background: #fff; color: #1e293b; outline: none; box-sizing: border-box; transition: 0.2s; }
+.input-padrao:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
 
-/* ===== TEMPO DE PERMANÊNCIA ===== */
-.td-tempo-wrapper { display: flex; flex-direction: column; gap: 2px; }
-.perm-bar { height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; width: 100%; margin-top: 2px; }
+/* Nome do Paciente (Maiúsculo e Negrito) */
+.input-nome { font-weight: 700; text-transform: uppercase; color: #0f1b2d; }
+
+/* Tempo de Permanência Compacto */
+.td-tempo-wrapper { height: 36px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.input-tempo { height: 20px; padding: 0 4px; font-size: 10px; border: 1px solid #cbd5e1; border-radius: 4px; color: #64748b; outline: none; }
+.perm-bar { height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; width: 100%; }
 .pbar-mini-fill { height: 100%; background: #3b82f6; transition: width 0.5s; }
 .pbar-mini-fill.atencao { background: #f59e0b; }
 .pbar-mini-fill.critico { background: #ef4444; }
-.perm-text-mini { font-size: 9px; font-weight: 700; color: #475569; text-align: center; }
 
-/* ===== AÇÕES ===== */
-.acoes-flex { display: flex; gap: 4px; justify-content: center; }
-.btn-clear { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-size: 10px; font-weight: 700; cursor: pointer; transition: .2s; }
+/* Ações */
+.acoes-flex { display: flex; gap: 6px; justify-content: center; }
+.btn-clear { padding: 0 12px; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer; color: #64748b; transition: .2s; }
 .btn-clear:hover { background: #fee2e2; color: #ef4444; border-color: #fca5a5; }
 
-/* ===== LINHA DE DETALHES (BARRA VERTICAL CONTÍNUA) ===== */
-tr.detail-row td { 
-    padding: 0 12px 16px 12px; 
-    background: #fff; 
-    border-bottom: 1px solid #bae6fd; 
-    border-right: 1px solid #bae6fd; 
-    border-left: 6px solid #3b82f6; /* Continua a barra azul */
-    border-bottom-left-radius: 8px; 
-    border-bottom-right-radius: 8px; 
-}
+/* Linha de Detalhes */
 tr.detail-row.collapsed { display: none; }
-.detail-flex-container { display: flex; gap: 12px; align-items: stretch; }
-.detail-col { display: flex; flex-direction: column; gap: 6px; background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; }
-.detail-col label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
-.detail-col textarea { width: 100%; height: 60px; resize: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 12px; outline: none; font-family: inherit; }
+.detail-flex-container { display: flex; gap: 16px; align-items: stretch; padding-top: 8px; }
+.detail-col { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.detail-col label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+.detail-col textarea { width: 100%; height: 60px; resize: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 12px; outline: none; font-family: inherit; background: #fff; }
 .detail-col textarea:focus { border-color: #3b82f6; }
 
-/* LARGURAS DAS COLUNAS DE DETALHES */
-.col-origem { flex: 0 0 10%; }
-.col-diag { flex: 1; }
-.col-scores { flex: 0 0 15%; }
-.col-exames { flex: 1; }
-.col-pend { flex: 1; }
-.col-prot { flex: 0 0 12%; }
-.col-esp { flex: 0 0 15%; }
-
-/* TAGS */
-.tags-edit { display: flex; flex-wrap: wrap; gap: 4px; }
-.tag-edit { padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 10px; font-weight: 600; color: #64748b; cursor: pointer; user-select: none; transition: 0.2s; }
-.tag-edit:hover { border-color: #94a3b8; color: #475569; }
-.tag-edit.on { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-
+/* Tags e Especialidades */
+.tags-edit { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-edit { padding: 4px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #475569; transition: 0.2s; }
+.tag-edit.on { background: #0f1b2d; color: #fff; border-color: #0f1b2d; }
 .input-group-add { display: flex; gap: 4px; }
-.input-group-add select { flex: 1; height: 26px; padding: 2px 4px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; }
-.btn-add-tag { background: #0f1b2d; color: #fff; border: none; border-radius: 4px; width: 26px; height: 26px; font-weight: bold; cursor: pointer; }
-.tags-selected { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-.tag-selected { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 4px; }
-.tag-remove { color: #ef4444; cursor: pointer; font-weight: bold; }
-
+.input-group-add select { flex: 1; height: 28px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; outline: none; }
+.btn-add-tag { width: 28px; height: 28px; background: #2563eb; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.tags-selected { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.tag-selected { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 4px; border: 1px solid #bae6fd; }
+.tag-remove { cursor: pointer; color: #0284c7; font-weight: bold; }
+.tag-remove:hover { color: #ef4444; }
 </style>
-</head>
 
 <body>
-
+<!-- TELA DE LOGIN -->
 <div id="login-screen">
     <div class="login-box">
-        <h2>Acesso Médico</h2>
-        <p class="subtitle">Pronto Socorro - Hospital Paulo Sacramento</p>
-        <input type="email" id="email" placeholder="E-mail cadastrado">
+        <h2>Pronto Socorro</h2>
+        <div class="subtitle">Hospital Paulo Sacramento</div>
+        <input type="email" id="email" placeholder="E-mail corporativo">
         <input type="password" id="senha" placeholder="Senha">
-        <button onclick="fazerLogin()">Entrar no Sistema</button>
+        <button onclick="fazerLogin()">Acessar Sistema</button>
         <div id="login-erro"></div>
     </div>
 </div>
 
+<!-- CONTEÚDO DO APP -->
 <div id="app-content" style="display:none;">
     <header class="main-header">
         <div class="header-inner">
-            <div class="header-logo">🏥</div>
             <div class="header-info">
                 <h1>Hospital Paulo Sacramento</h1>
-                <span>Pronto Socorro - Passagem de Plantão</span>
+                <span>Gestão de Leitos — Pronto Socorro</span>
             </div>
             <div class="header-meta">
-                <div class="header-date"><span id="HD"></span> <span id="HT"></span></div>
-                <button class="btn-logout" onclick="fazerLogout()">Sair</button>
-                <div class="turno-badge" id="tp" onclick="tgT()">
+                <button class="btn-padrao" onclick="exportarWhatsApp()">📱 WhatsApp</button>
+                <button class="btn-padrao btn-primary" onclick="addLeito()">+ Novo Leito</button>
+                <button class="btn-padrao" onclick="delLeito()">- Remover</button>
+                <button id="tp" class="turno-badge" onclick="tgT()">
                     <span id="tp-b">DIURNO</span> | <span id="tp-h">07:00 - 19:00</span>
+                </button>
+                <div class="header-date">
+                    <div id="HD">--/--/----</div>
+                    <div id="HT">--:--</div>
                 </div>
+                <button class="btn-logout" onclick="fazerLogout()">Sair</button>
             </div>
         </div>
     </header>
 
-    <div class="container">
-        <div class="action-bar">
-            <div class="filters">
-                <button class="fb on" onclick="fil(this,'all')">Todos</button>
-                <button class="fb" onclick="fil(this,'reavaliacao')">Reavaliação</button>
-                <button class="fb" onclick="fil(this,'enfermaria')">Enfermaria</button>
-                <button class="fb" onclick="fil(this,'uti')">UTI</button>
-                <button class="fb" onclick="fil(this,'vazio')">Vazio</button>
-            </div>
-            <div style="margin-left:auto; display:flex; gap:8px;">
-                <button class="btn-act btn-add" onclick="addLeito()">+ Adicionar Leito</button>
-                <button class="btn-act btn-del" onclick="delLeito()">- Remover Leito</button>
-                <button class="btn-act btn-print" onclick="window.print()">🖨️ Imprimir</button>
-                <button class="btn-act btn-print" onclick="exportarWhatsApp()">📱 WhatsApp</button>
-            </div>
+    <div class="dashboard-bar">
+        <div class="filters">
+            <button class="fb on" onclick="fil(this, 'all')">Todos</button>
+            <button class="fb" onclick="fil(this, 'reavaliacao')">Reavaliação</button>
+            <button class="fb" onclick="fil(this, 'enfermaria')">Enfermaria</button>
+            <button class="fb" onclick="fil(this, 'uti')">UTI</button>
+            <button class="fb" onclick="fil(this, 'vazio')">Vazios</button>
         </div>
-
         <div class="counters">
-            <span class="counter" style="color:#2563eb" id="cT">0</span> Total &nbsp;
-            <span class="counter" style="color:#f59e0b" id="cReav">0</span> Reavaliação &nbsp;
-            <span class="counter" style="color:#10b981" id="cEnf">0</span> Enfermaria &nbsp;
-            <span class="counter" style="color:#ef4444" id="cUti">0</span> UTI &nbsp;
-            <span class="counter" style="color:#9ca3af" id="cV">0</span> Vazios
+            <span style="color:#1e293b"><span class="counter" id="cT">0</span> Total</span>
+            <span style="color:#f59e0b"><span class="counter" id="cReav">0</span> Reavaliação</span>
+            <span style="color:#10b981"><span class="counter" id="cEnf">0</span> Enfermaria</span>
+            <span style="color:#ef4444"><span class="counter" id="cUti">0</span> UTI</span>
+            <span style="color:#94a3b8"><span class="counter" id="cV">0</span> Vazios</span>
         </div>
+    </div>
 
-        <div class="table-wrap">
-            <div class="table-scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Leito</th>
-                            <th>Paciente</th>
-                            <th>Idade</th>
-                            <th>Sexo</th>
-                            <th>Sistema</th>
-                            <th>Local</th>
-                            <th>Tempo</th>
-                            <th>Status</th>
-                            <th>Destino</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody"></tbody>
-                </table>
-            </div>
-        </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 60px; text-align: center;">Leito</th>
+                    <th style="width: 25%;">Paciente</th>
+                    <th style="width: 80px;">Idade</th>
+                    <th style="width: 80px;">Sexo</th>
+                    <th style="width: 120px;">Convênio</th>
+                    <th style="width: 120px;">Local</th>
+                    <th style="width: 120px;">Tempo</th>
+                    <th style="width: 120px;">Status</th>
+                    <th style="width: 140px;">Destino</th>
+                    <th style="width: 80px; text-align: center;">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
     </div>
 </div>
 
@@ -261,235 +216,207 @@ var firebaseConfig = {
   messagingSenderId: "544012275784",
   appId: "1:544012275784:web:5820f1275310bd56e9887d"
 };
-
 firebase.initializeApp(firebaseConfig);
 var auth = firebase.auth();
 var db = firebase.firestore();
 
-// ===== VARIÁVEIS GLOBAIS E OPÇÕES =====
+// ===== VARIÁVEIS GLOBAIS E LISTAS ATUALIZADAS =====
 var ST = [];
 var currentFilter = 'all';
 var turno = 'diurno';
-var EXP = {}; 
 
 var cv_options = ['proprio', 'convenio', 'particular', 'sus'];
 var lc_options = [{val:'sam', txt:'SAM - Emergencia'}, {val:'int', txt:'Internados'}];
-var st_options = [
-    {val:'estavel', txt:'Estável'}, 
-    {val:'atencao', txt:'Atenção'}, 
-    {val:'critico', txt:'Crítico'}
-];
-var df_options = [
-    {val:'vazio', txt:'Vazio'}, 
-    {val:'reavaliacao', txt:'Reavaliação'}, 
-    {val:'enfermaria', txt:'Enfermaria'}, 
-    {val:'uti', txt:'UTI'}, 
-    {val:'alta', txt:'Alta'},
-    {val:'transferencia', txt:'Transferência'},
-    {val:'obito', txt:'Óbito'}
-];
+var st_options = [{val:'estavel', txt:'Estável'}, {val:'atencao', txt:'Atenção'}, {val:'critico', txt:'Crítico'}];
+var df_options = [{val:'vazio', txt:'Vazio'}, {val:'reavaliacao', txt:'Reavaliação'}, {val:'enfermaria', txt:'Enfermaria'}, {val:'uti', txt:'UTI'}, {val:'alta', txt:'Alta'}, {val:'transferencia', txt:'Transferência'}, {val:'obito', txt:'Óbito'}];
 
-// LISTAS ATUALIZADAS CONFORME SOLICITADO
+// Listas Solicitadas
 var prot_options = ['SEPSE', 'AVC', 'DOR TORÁCICA'];
-var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', 'Nefrologia', 'Cirurgia Geral', 'Cirurgia Torácica', 'Cirúrgica Vascular', 'Infectologia', 'Neurocirurgia', 'Hemodinâmica', 'Ortopedia', 'Pediatria', 'GO'];
+var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', 'Nefrologia', 'Cirurgia Geral', 'Cirurgia Torácica', 'Cirurgia Vascular', 'Infectologia', 'Neurocirurgia', 'Hemodinâmica', 'Ortopedia', 'Pediatria', 'GO'];
 
-// ===== FUNÇÕES DE AUTENTICAÇÃO =====
+// ===== UTILITÁRIOS =====
+function g(id) { return document.getElementById(id); }
+function gb(n) { return ST.find(function(x) { return x.n === n; }); }
+function esc(s) { return (s||'').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+
+// ===== AUTENTICAÇÃO =====
 function fazerLogin() {
-    var e = document.getElementById('email').value;
-    var s = document.getElementById('senha').value;
-    document.getElementById('login-erro').style.display = 'none';
-
-    auth.signInWithEmailAndPassword(e, s).catch(function(error) {
-        document.getElementById('login-erro').innerText = 'Erro: ' + error.message;
-        document.getElementById('login-erro').style.display = 'block';
+    var e = g('email').value, s = g('senha').value;
+    g('login-erro').style.display = 'none';
+    auth.signInWithEmailAndPassword(e, s).catch(function(err) {
+        g('login-erro').innerText = 'Erro: ' + err.message;
+        g('login-erro').style.display = 'block';
     });
 }
-
 function fazerLogout() { auth.signOut(); }
 
 auth.onAuthStateChanged(function(user) {
     if (user) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-content').style.display = 'block';
+        g('login-screen').style.display = 'none';
+        g('app-content').style.display = 'block';
         iniciarBancoDeDados(); 
     } else {
-        document.getElementById('login-screen').style.display = 'flex';
-        document.getElementById('app-content').style.display = 'none';
-        if(unsubscribeDB) unsubscribeDB(); 
+        g('login-screen').style.display = 'flex';
+        g('app-content').style.display = 'none';
     }
 });
 
-// ===== FUNÇÕES DE BANCO DE DADOS (FIRESTORE) =====
-var unsubscribeDB = null;
-
+// ===== BANCO DE DADOS (COM PROTEÇÃO DE FOCO) =====
 function iniciarBancoDeDados() {
-    if(unsubscribeDB) unsubscribeDB();
-
-    unsubscribeDB = db.collection('sistema').doc('leitos').onSnapshot(function(doc) {
-        // Ignora atualizações locais para não roubar o foco enquanto digita
-        if (doc.metadata.hasPendingWrites) return; 
-
-        if (doc.exists) {
+    db.collection('sistema').doc('pronto-socorro').onSnapshot(function(doc) {
+        if(doc.exists) {
             var data = doc.data();
-            if (data.dados) ST = JSON.parse(data.dados);
-            if (data.turno) { turno = data.turno; upTurno(); }
-            rnd();
-            upSum();
+            if(data.leitos) {
+                // Trava inteligente: só atualiza a tela se o usuário NÃO estiver digitando
+                var active = document.activeElement;
+                var isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+
+                if (!isTyping) {
+                    ST = JSON.parse(data.leitos);
+                    turno = data.turno || 'diurno';
+                    upTurno();
+                    rnd();
+                    upSum();
+                }
+            }
         } else {
             if(ST.length === 0) addLeito();
         }
     });
 }
 
-// FUNÇÃO CORRIGIDA PARA SALVAR TUDO NO FIREBASE
 function saveAll() {
-    if (!db) return;
-    db.collection('sistema').doc('leitos').set({
-        dados: JSON.stringify(ST),
-        turno: turno
-    }).catch(function(error) {
-        console.error("Erro ao salvar no Firebase: ", error);
+    if(!auth.currentUser) return;
+    db.collection('sistema').doc('pronto-socorro').set({
+        leitos: JSON.stringify(ST),
+        turno: turno,
+        ultimaAtualizacao: firebase.firestore.FieldValue.serverTimestamp()
     });
 }
 
-// ===== FUNÇÕES AUXILIARES =====
-function g(id) { return document.getElementById(id); }
-function esc(s) { return (s||'').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
-function gb(n) { for(var i=0; i<ST.length; i++) { if(ST[i].n === n) return ST[i]; } return null; }
+// Salva ao fechar a aba por segurança
+window.addEventListener('beforeunload', function() { saveAll(); });
 
+// ===== CÁLCULO DE TEMPO =====
 function hD(dStr) {
-    if(!dStr) return { txt: '0h 0m', pct: 0, colorClass: '' };
-    var diff = Math.floor((new Date() - new Date(dStr)) / 60000);
+    if(!dStr) return {txt:'', pct:0, colorClass:''};
+    var d = new Date(dStr), diff = new Date() - d;
     if(diff < 0) diff = 0;
-    var h = Math.floor(diff / 60), m = diff % 60;
+    var h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000);
     var pct = Math.min((h / 24) * 100, 100);
-    var cc = ''; if(h >= 12 && h < 24) cc = 'atencao'; else if(h >= 24) cc = 'critico';
-    return { txt: h + 'h ' + m + 'm', pct: pct, colorClass: cc };
+    var colorClass = '';
+    if(h >= 12 && h < 24) colorClass = 'atencao';
+    else if(h >= 24) colorClass = 'critico';
+    return { txt: h + 'h ' + m + 'm', pct: pct, colorClass: colorClass };
 }
 
-// ===== RENDERIZAÇÃO =====
+// ===== RENDERIZAÇÃO DA TABELA =====
 function rnd() {
-    var tbody = g('tbody'); if(!tbody) return;
+    var tbody = g('tbody');
+    if(!tbody) return;
     var h = '';
-    var visualIndex = 0;
-
     for(var i=0; i<ST.length; i++) {
         var b = ST[i];
         var isVazio = (!b.pac || b.pac.trim() === '');
 
-        var matchFilter = false;
-        if (currentFilter === 'all') matchFilter = true;
-        else if (currentFilter === 'vazio') matchFilter = isVazio;
-        else matchFilter = (b.df === currentFilter);
+        // Filtro por Destino Final
+        var show = false;
+        if(currentFilter === 'all') show = true;
+        else if(currentFilter === 'vazio' && isVazio) show = true;
+        else if(currentFilter === b.df && !isVazio) show = true;
 
-        if(matchFilter) {
-            var admDate = b.adm ? new Date(b.adm) : new Date();
-            var admDateTimeLocal = b.adm ? admDate.toISOString().slice(0,16) : '';
+        if(show) {
+            var statusClass = isVazio ? 'is-vazio' : 'is-' + (b.st || 'estavel');
+            var isExpanded = !isVazio; // Leitos ocupados sempre expandidos
+
+            var admDateTimeLocal = '';
+            if(b.adm) {
+                var dObj = new Date(b.adm);
+                admDateTimeLocal = new Date(dObj.getTime() - (dObj.getTimezoneOffset() * 60000)).toISOString().slice(0,16);
+            }
             var hh = hD(b.adm);
 
-            // Leitos ocupados sempre expandidos por padrão
-            var isExpanded = EXP[b.n] !== undefined ? EXP[b.n] : !isVazio;
+            h += '<tr class="main-row ' + statusClass + '">';
+            h += '<td style="text-align: center;"><div class="leito-badge">' + b.n + '</div></td>';
+            h += '<td><input type="text" class="input-padrao input-nome" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="Nome do Paciente" onblur="svC('+b.n+')"></td>';
+            h += '<td><input type="number" class="input-padrao" id="idade_'+b.n+'" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+')"></td>';
 
-            var criticoClass = '';
-            if (b.st === 'critico') criticoClass = ' is-critico';
-            else if (b.st === 'atencao') criticoClass = ' is-atencao';
+            h += '<td><select class="input-padrao" id="sexo_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<option value="M"'+(b.sexo==='M'?' selected':'')+'>M</option><option value="F"'+(b.sexo==='F'?' selected':'')+'>F</option></select></td>';
 
-            h += '<tr class="main-row' + (isVazio ? ' main-row-vazio' : '') + criticoClass + (isExpanded ? ' expanded' : '') + '">';
-
-            h += '<td class="td-leito"><strong>' + b.n + '</strong></td>';
-            h += '<td><input type="text" class="input-paciente" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="Nome do Paciente" onblur="svC('+b.n+')"></td>';
-            h += '<td><input type="text" class="input-idade" id="idade_'+b.n+'" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+')"></td>';
-
-            h += '<td><select id="sexo_'+b.n+'" onchange="svC('+b.n+')">';
-            h += '<option value="M"'+(b.sexo==='M'?' selected':'')+'>M</option>';
-            h += '<option value="F"'+(b.sexo==='F'?' selected':'')+'>F</option>';
+            h += '<td><select class="input-padrao" id="cv_'+b.n+'" onchange="svC('+b.n+')">';
+            for(var c=0; c<cv_options.length; c++) { h += '<option value="'+cv_options[c]+'"'+(b.cv===cv_options[c]?' selected':'')+'>'+cv_options[c].toUpperCase()+'</option>'; }
             h += '</select></td>';
 
-            h += '<td><select id="lc_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<td><select class="input-padrao" id="lc_'+b.n+'" onchange="svC('+b.n+')">';
             for(var l=0; l<lc_options.length; l++) { h += '<option value="'+lc_options[l].val+'"'+(b.lc===lc_options[l].val?' selected':'')+'>'+lc_options[l].txt+'</option>'; }
             h += '</select></td>';
 
             h += '<td><div class="td-tempo-wrapper">';
-            h += '<input type="datetime-local" id="adm_'+b.n+'" value="'+admDateTimeLocal+'" onblur="svC('+b.n+')">';
+            h += '<input type="datetime-local" class="input-tempo" id="adm_'+b.n+'" value="'+admDateTimeLocal+'" onblur="svC('+b.n+')">';
             h += '<div class="perm-bar"><div class="pbar-mini-fill ' + hh.colorClass + '" style="width:'+hh.pct+'%"></div></div>';
-            h += '<div class="perm-text-mini">'+hh.txt+'</div>';
             h += '</div></td>';
 
-            h += '<td><select id="st_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<td><select class="input-padrao" id="st_'+b.n+'" onchange="svC('+b.n+')">';
             for(var s=0; s<st_options.length; s++) { h += '<option value="'+st_options[s].val+'"'+(b.st===st_options[s].val?' selected':'')+'>'+st_options[s].txt+'</option>'; }
             h += '</select></td>';
 
-            h += '<td><select id="df_'+b.n+'" onchange="svC('+b.n+')">';
+            h += '<td><select class="input-padrao" id="df_'+b.n+'" onchange="svC('+b.n+')">';
             for(var d=0; d<df_options.length; d++) { h += '<option value="'+df_options[d].val+'"'+(b.df===df_options[d].val?' selected':'')+'>'+df_options[d].txt+'</option>'; }
             h += '</select></td>';
 
-            h += '<td class="td-acoes">';
-            h += '<div class="acoes-flex">';
-            h += '<button class="btn-clear" onclick="clC('+b.n+')">Limpar</button>';
-            h += '</div>';
-            h += '</td></tr>';
+            h += '<td style="text-align: center;"><div class="acoes-flex"><button class="btn-clear" onclick="clC('+b.n+')">Limpar</button></div></td>';
+            h += '</tr>';
 
-            h += '<tr class="detail-row' + (isExpanded ? '' : ' collapsed') + criticoClass + '">';
-            h += '<td colspan="9"><div class="detail-flex-container">';
+            // Linha de Detalhes
+            h += '<tr class="detail-row ' + statusClass + (isExpanded ? '' : ' collapsed') + '">';
+            h += '<td colspan="10"><div class="detail-flex-container">';
 
-            h += '<div class="detail-col col-origem"><label>Origem</label><textarea id="ori_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.ori)+'</textarea></div>';
-            h += '<div class="detail-col col-diag"><label>Diagnósticos</label><textarea id="dg_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.dg)+'</textarea></div>';
-            h += '<div class="detail-col col-scores"><label>Scores Clínicos</label><textarea id="sc_'+b.n+'" onblur="svC('+b.n+')" placeholder="Ex: SOFA 2...">'+esc(b.sc)+'</textarea></div>';
-            h += '<div class="detail-col col-exames"><label>Exames</label><textarea id="ex_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.ex)+'</textarea></div>';
-            h += '<div class="detail-col col-pend"><label>Pendências</label><textarea id="pd_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.pd)+'</textarea></div>';
+            h += '<div class="detail-col"><label>Origem</label><textarea id="ori_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.ori)+'</textarea></div>';
+            h += '<div class="detail-col" style="flex: 1.5;"><label>Diagnósticos</label><textarea id="dg_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.dg)+'</textarea></div>';
+            h += '<div class="detail-col"><label>Scores Clínicos</label><textarea id="sc_'+b.n+'" onblur="svC('+b.n+')" placeholder="Ex: SOFA 2...">'+esc(b.sc)+'</textarea></div>';
+            h += '<div class="detail-col" style="flex: 1.5;"><label>Exames</label><textarea id="ex_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.ex)+'</textarea></div>';
+            h += '<div class="detail-col" style="flex: 1.5;"><label>Pendências</label><textarea id="pd_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.pd)+'</textarea></div>';
 
-            h += '<div class="detail-col col-prot"><label>Protocolos</label><div class="tags-edit">';
+            h += '<div class="detail-col"><label>Protocolos</label><div class="tags-edit">';
             var bPr = typeof b.pr === 'string' ? JSON.parse(b.pr || '[]') : (b.pr || []);
             for(var p=0; p<prot_options.length; p++) {
                 h += '<div class="tag-edit' + (bPr.indexOf(prot_options[p]) > -1 ? ' on' : '') + '" onclick="tgPr('+b.n+',\''+esc(prot_options[p])+'\')">' + prot_options[p] + '</div>';
             }
             h += '</div></div>';
 
-            h += '<div class="detail-col col-esp"><label>Especialidades</label>';
-            h += '<div class="input-group-add">';
-            h += '<select id="sel_es_'+b.n+'">';
-            h += '<option value="">Selecione...</option>';
-            for(var e=0; e<esp_options.length; e++) {
-                h += '<option value="'+esp_options[e]+'">'+esp_options[e]+'</option>';
-            }
-            h += '</select>';
-            h += '<button class="btn-add-tag" onclick="addEs('+b.n+')">+</button>';
-            h += '</div>';
-
+            h += '<div class="detail-col"><label>Especialidades</label><div class="input-group-add">';
+            h += '<select id="sel_es_'+b.n+'"><option value="">Selecione...</option>';
+            for(var e=0; e<esp_options.length; e++) { h += '<option value="'+esp_options[e]+'">'+esp_options[e]+'</option>'; }
+            h += '</select><button class="btn-add-tag" onclick="addEs('+b.n+')">+</button></div>';
             h += '<div class="tags-selected">';
-            var bEs = [];
-            try { bEs = JSON.parse(b.es || '[]'); } catch(err) { if(b.es && b.es !== '') bEs = [b.es]; }
-
-            for(var t=0; t<bEs.length; t++) {
-                h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+esc(bEs[t])+'\')">✕</span></div>';
-            }
+            var bEs = []; try { bEs = JSON.parse(b.es || '[]'); } catch(err) { if(b.es && b.es !== '') bEs = [b.es]; }
+            for(var t=0; t<bEs.length; t++) { h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+esc(bEs[t])+'\')">✕</span></div>'; }
             h += '</div></div>'; 
 
             h += '</div></td></tr>';
-            h += '<tr class="spacer-row"><td colspan="9"></td></tr>';
+            h += '<tr class="spacer-row"><td colspan="10"></td></tr>';
         }
     }
     tbody.innerHTML = h;
     tmrs();
 }
 
-// ===== FUNÇÕES DE INTERAÇÃO E SALVAMENTO =====
+// ===== INTERAÇÃO E SALVAMENTO =====
 function svC(n) {
     var b = gb(n); if(!b) return;
     b.pac = g('pac_'+n).value; b.idade = g('idade_'+n).value; b.sexo = g('sexo_'+n).value;
     b.cv = g('cv_'+n).value; b.lc = g('lc_'+n).value; 
     var admEl = g('adm_'+n); if(admEl && admEl.value) b.adm = new Date(admEl.value).toISOString();
-
     if(g('st_'+n)) b.st = g('st_'+n).value; 
     if(g('df_'+n)) b.df = g('df_'+n).value;
-
     var oriEl = g('ori_'+n); if(oriEl) b.ori = oriEl.value;
     var dgEl = g('dg_'+n); if(dgEl) b.dg = dgEl.value;
     var scEl = g('sc_'+n); if(scEl) b.sc = scEl.value; 
     var exEl = g('ex_'+n); if(exEl) b.ex = exEl.value;
     var pdEl = g('pd_'+n); if(pdEl) b.pd = pdEl.value;
 
-    saveAll(); // Agora a função saveAll() está garantida
+    saveAll(); 
     upSum();
 }
 
@@ -546,9 +473,7 @@ function upSum() {
         var isVazio = (!ST[i].pac || ST[i].pac.trim() === '');
         if(isVazio) { v++; } else {
             var df = ST[i].df || 'vazio';
-            if(df === 'reavaliacao') re++; 
-            else if(df === 'enfermaria') en++; 
-            else if(df === 'uti') uti++; 
+            if(df === 'reavaliacao') re++; else if(df === 'enfermaria') en++; else if(df === 'uti') uti++; 
         }
     }
     if(g('cT')) g('cT').innerHTML = t; 
@@ -566,9 +491,7 @@ function tmrs() {
         var row = document.querySelector('tr.main-row[ondragstart*="'+b.n+'"]');
         if(row) {
             var pbarFill = row.querySelector('.pbar-mini-fill');
-            var permText = row.querySelector('.perm-text-mini');
             if(pbarFill) { pbarFill.style.width = hh.pct + '%'; pbarFill.className = 'pbar-mini-fill ' + hh.colorClass; }
-            if(permText) { permText.innerHTML = hh.txt; }
         }
     }
 }
@@ -615,7 +538,7 @@ function exportarWhatsApp() {
     }).catch(err => { alert("Erro ao copiar o texto: " + err); });
 }
 
-// ===== INICIALIZAÇÃO DOS RELÓGIOS =====
+// ===== INICIALIZAÇÃO =====
 setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 30000);
 </script>
 </body>
