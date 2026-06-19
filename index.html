@@ -250,6 +250,43 @@ var esp_options = [
     'Nefrologia', 'Cirurgia Toracica', 'Neurocirurgia', 'Hemodinâmica', 'GO'
 ];
 
+// ===== FUNÇÕES DE AUTENTICAÇÃO =====
+function fazerLogin() {
+    var e = document.getElementById('email').value;
+    var s = document.getElementById('senha').value;
+    var erroEl = document.getElementById('login-erro');
+    if(erroEl) erroEl.style.display = 'none';
+
+    auth.signInWithEmailAndPassword(e, s).catch(function(error) {
+        if(erroEl) {
+            erroEl.innerText = 'Erro: ' + error.message;
+            erroEl.style.display = 'block';
+        } else {
+            alert('Erro no login: ' + error.message);
+        }
+    });
+}
+
+function fazerLogout() { 
+    auth.signOut(); 
+}
+
+auth.onAuthStateChanged(function(user) {
+    var loginScreen = document.getElementById('login-screen');
+    var appContent = document.getElementById('app-content');
+
+    if (user) {
+        if(loginScreen) loginScreen.style.display = 'none';
+        if(appContent) appContent.style.display = 'block';
+        // Inicia a leitura do banco apenas após o login bem-sucedido
+        iniciarBancoDeDados(); 
+    } else {
+        if(loginScreen) loginScreen.style.display = 'flex';
+        if(appContent) appContent.style.display = 'none';
+        if(typeof unsubscribeDB !== 'undefined' && unsubscribeDB) unsubscribeDB();
+    }
+});
+
 // ===== FUNÇÕES DE UTILIDADE =====
 function g(id) { return document.getElementById(id); }
 function gb(n) { for(var i=0; i<ST.length; i++) { if(ST[i].n === n) return ST[i]; } return null; }
