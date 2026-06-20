@@ -207,6 +207,7 @@ tr.detail-row.collapsed { display: none; }
 </div>
 
 <script>
+
 // ===== CONFIGURAÇÃO DO FIREBASE =====
 var firebaseConfig = {
   apiKey: "AIzaSyAQ_slPq5EJU0uIjlLegtahV3RAana4VM0",
@@ -221,10 +222,16 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 var auth = firebase.auth();
 var db = firebase.firestore();
 
+// ATIVAÇÃO DA PERSISTÊNCIA OFFLINE (Evita perda de dados no F5 ou oscilações de rede)
+db.enablePersistence().catch(function(err) {
+    console.warn("Persistência offline indisponível:", err.code);
+});
+
 // ===== VARIÁVEIS GLOBAIS E OPÇÕES =====
 var ST = [];
 var currentFilter = 'all';
 var turno = 'diurno';
+var unsubscribeDB = null; // Armazena a função para desativar o listener antigo
 
 var cv_options = ['proprio', 'convenio', 'particular', 'sus'];
 var lc_options = [{val:'sam', txt:'SAM - Emergencia'}, {val:'int', txt:'Internados'}];
@@ -278,12 +285,14 @@ auth.onAuthStateChanged(function(user) {
     if (user) {
         if(loginScreen) loginScreen.style.display = 'none';
         if(appContent) appContent.style.display = 'block';
-        // Inicia a leitura do banco apenas após o login bem-sucedido
-        iniciarBancoDeDados(); 
+        
+        // Limpa conexões duplicadas antes de abrir uma nova
+        if (unsubscribeDB) { unsubscribeDB(); }
+        unsubscribeDB = iniciarBancoDeDados(); 
     } else {
         if(loginScreen) loginScreen.style.display = 'flex';
         if(appContent) appContent.style.display = 'none';
-        if(typeof unsubscribeDB !== 'undefined' && unsubscribeDB) unsubscribeDB();
+        if(unsubscribeDB) { unsubscribeDB(); unsubscribeDB = null; }
     }
 });
 
@@ -306,8 +315,8 @@ function hD(iso) {
 
 // ===== BANCO DE DADOS E SALVAMENTO =====
 function iniciarBancoDeDados() {
-    db.collection('sistema').doc('leitos').onSnapshot(function(doc) {
-        // Evita atualizar a tela se o usuário estiver digitando (evita perda de foco)
+    // Retorna a referência do listener para podermos pará-lo quando necessário
+    return db.collection('sistema').doc('leitos').onSnapshot(function(doc) {
         var activeTag = document.activeElement ? document.activeElement.tagName : '';
         var isTyping = (activeTag === 'INPUT' || activeTag === 'TEXTAREA');
 
@@ -319,8 +328,11 @@ function iniciarBancoDeDados() {
             upSum();
             upTurno();
         } else if (!doc.exists) {
+            // Só cria o documento padrão se tiver certeza absoluta que ele não existe no servidor
             ST = []; addLeito();
         }
+    }, function(error) {
+        console.error("Erro na sincronização do Firestore:", error);
     });
 }
 
@@ -335,10 +347,9 @@ function saveAll() {
     });
 }
 
-// Trava de segurança: Salva os dados caso o usuário aperte F5 ou feche a aba
 window.addEventListener('beforeunload', function (e) {
     if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur(); // Força o salvamento do campo atual
+        document.activeElement.blur(); 
     }
     saveAll();
 });
@@ -357,7 +368,7 @@ function rnd() {
         else if(!isVazio && b.df === currentFilter) show = true;
 
         if(show) {
-            var isExpanded = !isVazio; // Leitos ocupados sempre expandidos
+            var isExpanded = !isVazio; 
             var statusClass = isVazio ? 'main-row-vazio' : (b.st === 'critico' ? 'is-critico' : (b.st === 'atencao' ? 'is-atencao' : 'is-estavel'));
 
             var admDateTimeLocal = '';
@@ -367,7 +378,6 @@ function rnd() {
                 admDateTimeLocal = dObj.toISOString().slice(0,16);
             }
 
-            // Linha Principal
             h += '<tr class="main-row ' + statusClass + (isExpanded ? ' expanded' : '') + '">';
             h += '<td class="td-leito" style="text-align: center;"><div class="leito-badge">' + b.n + '</div></td>';
             h += '<td><input type="text" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+')" style="font-weight:bold; text-transform:uppercase;"></td>';
@@ -404,7 +414,6 @@ function rnd() {
             h += '<td class="td-acoes"><div class="acoes-flex"><button class="btn-clear" onclick="clC('+b.n+')">Limpar</button></div></td>';
             h += '</tr>';
 
-            // Linha de Detalhes
             h += '<tr class="detail-row ' + statusClass + (isExpanded ? '' : ' collapsed') + '">';
             h += '<td colspan="10"><div class="detail-flex-container">';
 
@@ -548,8 +557,9 @@ function upDateTime() {
 }
 
 // ===== INICIALIZAÇÃO =====
-iniciarBancoDeDados(); // Inicia a leitura do Firebase ao carregar
+// A leitura do banco agora ocorre estritamente de forma segura dentro do fluxo do onAuthStateChanged.
 setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 30000);
+
 </script>
 </body>
 </html>
