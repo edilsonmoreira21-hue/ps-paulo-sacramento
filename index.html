@@ -124,6 +124,13 @@ tr.detail-row.collapsed { display: none; }
 .tag-selected { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; border: 1px solid #bae6fd; }
 .tag-remove { cursor: pointer; color: #0284c7; font-weight: bold; }
 .tag-remove:hover { color: #ef4444; }
+
+/* Linha Amarela (Atenção) */
+tbody tr.main-row.is-atencao td { background: #fefce8; }
+
+/* Linha Vermelha (Crítico) */
+tbody tr.main-row.is-critico td { background: #fef2f2; }
+
 </style>
 </head>
 <body>
@@ -367,6 +374,9 @@ function rnd() {
                 admDateTimeLocal = dObj.toISOString().slice(0,16);
             }
 
+	    var statusClass = (b.st === 'critico') ? 'is-critico' : (b.st === 'atencao' ? 'is-atencao' : 'is-estavel');
+		h += '<tr class="main-row ' + statusClass + '">';	    
+
             h += '<tr class="main-row ' + statusClass + (isExpanded ? ' expanded' : '') + '">';
             h += '<td class="td-leito" style="text-align: center;"><div class="leito-badge">' + b.n + '</div></td>';
             h += '<td><input type="text" class="input-padrao input-nome" id="pac_'+b.n+'" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+')"></td>';
@@ -460,6 +470,7 @@ function svC(n) {
 
     saveAll(); 
     upSum();
+    rnd();
 }
 
 function clC(n) {
