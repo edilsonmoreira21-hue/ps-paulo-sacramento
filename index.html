@@ -86,7 +86,6 @@ tr.spacer-row td { height: 12px; background: transparent !important; border: non
 /* ===== ELEMENTOS INTERNOS ===== */
 .leito-badge { background: #1e3a8a; color: #fff; width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-/* Inputs Padronizados MAIORES e ALINHADOS COM O DESIGN */
 .input-padrao { height: 42px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; width: 100%; background: #fff; color: #1e293b; outline: none; box-sizing: border-box; transition: 0.2s; }
 .input-padrao:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
 .input-nome { font-weight: 700; text-transform: uppercase; color: #0f1b2d; font-size: 14px; }
@@ -105,16 +104,23 @@ select.input-padrao { cursor: pointer; }
 
 tr.detail-row.collapsed { display: none; }
 
-/* OTIMIZAÇÃO DE ESPAÇO: Redução do gap para caixas maiores */
+/* === LAYOUT DA LINHA DE DETALHES RETOCADO === */
 .detail-flex-container { display: flex; gap: 8px; align-items: stretch; padding-top: 8px; }
-.detail-col { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.detail-col { display: flex; flex-direction: column; gap: 6px; } 
 .detail-col label { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; }
 
-/* Textarea otimizada para mais linhas */
+/* Dimensionamento rebalanceado */
+.col-diag, .col-anotacoes { flex: 1; }
+.col-scores { flex: 0.5;}
+.col-exames { flex: 1.1; } /* Reduzido levemente de 3.5 para melhor proporção */
+.col-pendencia { flex: 0 0 200px; } 
+.col-protocolos { flex: 0 0 100px; } 
+.col-especialidades { flex: 0 0 200px; } 
+
 .detail-col textarea { width: 100%; height: 80px; resize: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-size: 13px; outline: none; font-family: inherit; background: #fff; line-height: 1.4; }
 .detail-col textarea:focus { border-color: #3b82f6; }
 
-.tags-edit { display: flex; flex-wrap: wrap; gap: 6px; }
+.tags-edit { display: flex; flex-wrap: wrap; gap: 2px; }
 .tag-edit { padding: 4px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; color: #475569; transition: 0.2s; }
 .tag-edit.on { background: #0f1b2d; color: #fff; border-color: #0f1b2d; }
 .input-group-add { display: flex; gap: 4px; }
@@ -124,13 +130,6 @@ tr.detail-row.collapsed { display: none; }
 .tag-selected { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; border: 1px solid #bae6fd; }
 .tag-remove { cursor: pointer; color: #0284c7; font-weight: bold; }
 .tag-remove:hover { color: #ef4444; }
-
-/* Linha Amarela (Atenção) */
-tbody tr.main-row.is-atencao td { background: #fefce8; }
-
-/* Linha Vermelha (Crítico) */
-tbody tr.main-row.is-critico td { background: #fef2f2; }
-
 </style>
 </head>
 <body>
@@ -163,7 +162,7 @@ tbody tr.main-row.is-critico td { background: #fef2f2; }
                     <div id="HD">--/--/----</div>
                     <div id="HT">--:--</div>
                 </div>
-                <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+                <button class="btn-padrao btn-logout" style="border:none;" onclick="fazerLogout()">Sair</button>
             </div>
         </div>
     </header>
@@ -207,7 +206,6 @@ tbody tr.main-row.is-critico td { background: #fef2f2; }
 </div>
 
 <script>
-
 // ===== CONFIGURAÇÃO DO FIREBASE =====
 var firebaseConfig = {
   apiKey: "AIzaSyAQ_slPq5EJU0uIjlLegtahV3RAana4VM0",
@@ -332,6 +330,7 @@ function iniciarBancoDeDados() {
     });
 }
 
+// Salva as alterações
 function saveAll() {
     if (ST.length === 0) return;
     db.collection('sistema').doc('leitos').set({
@@ -365,7 +364,7 @@ function rnd() {
 
         if(show) {
             var isExpanded = !isVazio; 
-            var statusClass = isVazio ? 'main-row-vazio' : (b.st === 'critico' ? 'is-critico' : (b.st === 'atencao' ? 'is-atencao' : 'is-estavel'));
+            var statusClass = isVazio ? 'is-vazio' : (b.st === 'critico' ? 'is-critico' : (b.st === 'atencao' ? 'is-atencao' : 'is-estavel'));
 
             var admDateTimeLocal = '';
             if(b.adm) {
@@ -373,9 +372,6 @@ function rnd() {
                 dObj.setMinutes(dObj.getMinutes() - dObj.getTimezoneOffset());
                 admDateTimeLocal = dObj.toISOString().slice(0,16);
             }
-
-	    var statusClass = (b.st === 'critico') ? 'is-critico' : (b.st === 'atencao' ? 'is-atencao' : 'is-estavel');
-		h += '<tr class="main-row ' + statusClass + '">';	    
 
             h += '<tr class="main-row ' + statusClass + (isExpanded ? ' expanded' : '') + '">';
             h += '<td class="td-leito" style="text-align: center;"><div class="leito-badge">' + b.n + '</div></td>';
@@ -413,36 +409,41 @@ function rnd() {
             h += '<td class="td-acoes"><div class="acoes-flex"><button class="btn-clear" onclick="clC('+b.n+')">Limpar</button></div></td>';
             h += '</tr>';
 
+            // LINHA DE DETALHES
             h += '<tr class="detail-row ' + statusClass + (isExpanded ? '' : ' collapsed') + '">';
             h += '<td colspan="10"><div class="detail-flex-container">';
 
-            h += '<div class="detail-col" style="flex: 1.5;"><label>Diagnósticos</label><textarea id="dg_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.dg)+'</textarea></div>';
-            h += '<div class="detail-col"><label>Scores Clínicos</label><textarea id="sc_'+b.n+'" onblur="svC('+b.n+')" placeholder="Ex: SOFA 2...">'+esc(b.sc)+'</textarea></div>';
-            h += '<div class="detail-col" style="flex: 1.5;"><label>Exames Relevantes</label><textarea id="ex_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.ex)+'</textarea></div>';
-            h += '<div class="detail-col" style="flex: 1.5;"><label>Anotações</label><textarea id="pd_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.pd)+'</textarea></div>';
+            // Campos principais
+            h += '<div class="detail-col col-diag"><label>Diagnósticos</label><textarea id="dg_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.dg)+'</textarea></div>';
+            h += '<div class="detail-col col-scores"><label>Scores Clínicos</label><textarea id="sc_'+b.n+'" onblur="svC('+b.n+')" placeholder="Ex: SOFA 2...">'+esc(b.sc)+'</textarea></div>';
+            h += '<div class="detail-col col-exames"><label>Exames Relevantes</label><textarea id="ex_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.ex)+'</textarea></div>';
+            h += '<div class="detail-col col-anotacoes"><label>Anotações</label><textarea id="pd_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.pd)+'</textarea></div>';
 
-            h += '<div class="detail-col" style="flex: 1.2;"><label>Pendência Importante</label><select id="pi_'+b.n+'" class="input-padrao" onchange="svC('+b.n+')">';
+            // Pendência
+            h += '<div class="detail-col col-pendencia"><label>Pendência Importante</label><select id="pi_'+b.n+'" class="input-padrao" onchange="svC('+b.n+')">';
             h += '<option value="">Nenhuma</option>';
             for(var p=0; p<pi_options.length; p++) {
                 h += '<option value="'+esc(pi_options[p])+'"'+(b.pi===pi_options[p]?' selected':'')+'>'+pi_options[p]+'</option>';
             }
             h += '</select></div>';
 
-            h += '<div class="detail-col"><label>Protocolos</label><div class="tags-edit">';
+            // Protocolos
+            h += '<div class="detail-col col-protocolos"><label>Protocolos</label><div class="tags-edit">';
             var bPr = typeof b.pr === 'string' ? JSON.parse(b.pr || '[]') : (b.pr || []);
             for(var pr=0; pr<prot_options.length; pr++) {
                 h += '<div class="tag-edit' + (bPr.indexOf(prot_options[pr]) > -1 ? ' on' : '') + '" onclick="tgPr('+b.n+',\''+esc(prot_options[pr])+'\')">' + prot_options[pr] + '</div>';
             }
             h += '</div></div>';
 
-            h += '<div class="detail-col"><label>Especialidades</label><div class="input-group-add">';
+            // Especialidades
+            h += '<div class="detail-col col-especialidades"><label>Especialidades</label><div class="input-group-add">';
             h += '<select class="input-padrao" style="height:32px; padding: 0 6px; font-size: 12px;" id="sel_es_'+b.n+'"><option value="">Selecione...</option>';
             for(var e=0; e<esp_options.length; e++) { h += '<option value="'+esp_options[e]+'">'+esp_options[e]+'</option>'; }
             h += '</select><button class="btn-add-tag" onclick="addEs('+b.n+')">+</button></div>';
             h += '<div class="tags-selected">';
             var bEs = []; try { bEs = JSON.parse(b.es || '[]'); } catch(err) { if(b.es && b.es !== '') bEs = [b.es]; }
             for(var t=0; t<bEs.length; t++) { h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+esc(bEs[t])+'\')">✕</span></div>'; }
-            h += '</div></div>'; 
+            h += '</div></div>';
 
             h += '</div></td></tr>';
             h += '<tr class="spacer-row"><td colspan="10"></td></tr>';
