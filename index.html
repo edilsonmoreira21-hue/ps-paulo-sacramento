@@ -12,7 +12,7 @@
 <style>
 /* ===== RESET E VARIÁVEIS (PREMIUM DARK MODE) ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; min-height: 100vh; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; min-height: 100vh; color-scheme: dark; }
 
 /* ===== TELA DE LOGIN & LGPD ===== */
 #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #020617, #0f172a); display: flex; justify-content: center; align-items: center; z-index: 9999; }
@@ -55,25 +55,25 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .counters { display: flex; gap: 16px; font-size: 13px; font-weight: 600; padding: 12px 24px 0 24px; color: #cbd5e1; }
 .counter { font-size: 16px; font-weight: 800; color: #f8fafc; }
 
-/* ===== ESTRUTURA DE CARDS (NOVO LAYOUT HORIZONTAL) ===== */
+/* ===== ESTRUTURA DE CARDS ===== */
 .bed-list-wrap { padding: 16px 24px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
 .bed-card { background: #1e293b; border-radius: 10px; padding: 16px; border-left: 6px solid #3b82f6; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); transition: 0.2s; }
 .bed-card.is-vazio { border-left-color: #334155; opacity: 0.7; }
 
-/* Cabeçalho do Card (Identificação Integrada) */
+/* Cabeçalho do Card */
 .bed-header { display: flex; gap: 16px; align-items: center; }
 .leito-badge { background: #020617; color: #3b82f6; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; box-shadow: 0 2px 4px rgba(0,0,0,0.5); flex-shrink: 0; }
 .header-inputs { flex: 1; display: flex; gap: 12px; }
 .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-/* Corpo do Card (Detalhes Metódicos) */
+/* Corpo do Card */
 .bed-body { margin-top: 16px; background: #020617; padding: 16px; border-radius: 8px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 16px; }
 .bed-row { display: flex; gap: 12px; align-items: stretch; }
 .detail-col { display: flex; flex-direction: column; gap: 6px; }
 .detail-col label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; display: flex; justify-content: space-between; align-items: flex-end;}
 .perm-text-mini { color: #cbd5e1; font-weight: 800; }
 
-/* Inputs Base Escuros */
+/* Inputs Base */
 .input-padrao { height: 38px; padding: 0 10px; border: 1px solid #334155; border-radius: 6px; font-size: 13px; font-family: inherit; width: 100%; background: #0f172a; color: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; }
 .input-padrao:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
 .input-nome { font-weight: 800; text-transform: uppercase; font-size: 15px; color: #f8fafc; }
@@ -92,8 +92,11 @@ select.input-padrao option { background: #0f172a; color: #f8fafc; }
 .btn-acao-mini.transf { color: #3b82f6; border-color: #1e3a8a; }
 .btn-acao-mini.transf:hover { background: #1e3a8a; color: #bfdbfe; border-color: #3b82f6; }
 
-/* Progress Bar de Tempo de Permanência */
-.prog-wrap { width: 100%; height: 4px; background: #1e293b; border-radius: 2px; margin-top: 2px; overflow: hidden; }
+/* ===== NOVO COMPONENTE ENCAPSULADO: TEMPO DE ADMISSÃO ===== */
+.adm-wrapper { display: flex; flex-direction: column; height: 38px; border: 1px solid #334155; border-radius: 6px; background: #0f172a; overflow: hidden; transition: 0.2s; box-sizing: border-box; }
+.adm-wrapper:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+.adm-input { flex: 1; border: none; background: transparent; color: #f8fafc; font-family: inherit; font-size: 13px; padding: 0 10px; outline: none; width: 100%; }
+.prog-wrap { width: 100%; height: 4px; background: #1e293b; }
 .prog-fill { height: 100%; width: 0%; background: #3b82f6; transition: width 0.3s ease, background-color 0.3s ease; }
 
 /* Botões de Protocolo Inline */
@@ -119,15 +122,12 @@ select.input-padrao option { background: #0f172a; color: #f8fafc; }
     body { background: #fff !important; color: #000 !important; font-size: 11px; }
     #login-screen, #app-content { display: none !important; }
     #print-area { display: block !important; width: 100%; }
-    
     .print-header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
     .print-header h2 { margin: 0 0 5px 0; font-size: 18px; text-transform: uppercase; }
     .print-header p { margin: 0; font-size: 12px; }
-    
     .print-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
     .print-table th, .print-table td { border: 1px solid #000; padding: 6px; text-align: left; vertical-align: top; page-break-inside: avoid; }
     .print-table th { background: #f1f5f9 !important; font-weight: bold; text-transform: uppercase; font-size: 10px; -webkit-print-color-adjust: exact; }
-    
     .print-footer { font-size: 9px; text-align: center; color: #333; border-top: 1px solid #ccc; padding-top: 5px; margin-top: 20px; }
 }
 </style>
@@ -282,7 +282,7 @@ function mudarAba(aba) {
     rnd(); upSum();
 }
 
-// ===== RENDERIZAÇÃO PRINCIPAL (CARDS CSS) =====
+// ===== RENDERIZAÇÃO PRINCIPAL (CARDS E ALINHAMENTO FLEXBOX) =====
 function rnd() {
     var wrapper = g('tb'); if(!wrapper) return;
     var h = '';
@@ -304,25 +304,25 @@ function rnd() {
         // Card Container
         h += '<div class="bed-card ' + statusClass + '">';
 
-        // Card Header (Identificação, Origem, Idade e Ações)
+        // Card Header (Identificação: Nome -> Idade -> Origem)
         h += '<div class="bed-header">';
         h += '<div class="leito-badge">' + b.n + '</div>';
         h += '<div class="header-inputs">';
         h += '<input id="pac_'+pfx+'" class="input-padrao input-nome" style="flex:2.5;" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<input id="idade_'+pfx+'" type="number" class="input-padrao" style="flex:0.4; min-width:70px;" value="'+esc(b.idade)+'" placeholder="Idade" onblur="svC('+b.n+',\''+bSetor+'\')">';
         h += '<input id="ori_'+pfx+'" class="input-padrao" style="flex:1;" value="'+esc(b.ori)+'" placeholder="Origem" onblur="svC('+b.n+',\''+bSetor+'\')">';
-        h += '<input id="idade_'+pfx+'" type="number" class="input-padrao" style="flex:0.4; min-width:80px;" value="'+esc(b.idade)+'" placeholder="Idade" onblur="svC('+b.n+',\''+bSetor+'\')">';
         h += '</div>';
         h += '<div class="header-actions">';
         h += '<button class="btn-acao-mini transf" onclick="transferir('+b.n+',\''+bSetor+'\')" title="Transferir Setor">Transferir</button>';
         h += '<button class="btn-acao-mini limpar" onclick="clC('+b.n+',\''+bSetor+'\')">Limpar</button>';
         h += '</div>';
-        h += '</div>'; // Fecha bed-header
+        h += '</div>';
 
         // Card Body
         var displayStyle = isExpanded ? 'display:flex;' : 'display:none;';
         h += '<div class="bed-body" style="'+displayStyle+'">';
 
-        // Linha 1 (Parâmetros Clínicos, Barra de Tempo e Protocolos)
+        // Linha 1 (Parâmetros, Admissão Encapsulada, Protocolos Integrados)
         h += '<div class="bed-row">';
         h += '<div class="detail-col" style="flex:0.8;"><label>Convênio</label><select id="cv_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var c=0; c<cv_options.length; c++) h += '<option value="'+cv_options[c]+'" '+(b.cv===cv_options[c]?'selected':'')+'>'+cv_options[c]+'</option>';
@@ -332,10 +332,12 @@ function rnd() {
         for(var l=0; l<lc_options.length; l++) h += '<option value="'+lc_options[l].val+'" '+(b.lc===lc_options[l].val?'selected':'')+'>'+lc_options[l].txt+'</option>';
         h += '</select></div>';
 
+        // Caixa de admissão com barra de progresso embutida (Altura travada em 38px)
         h += '<div class="detail-col" style="flex:1.2;"><label>Entrada <span class="perm-text-mini"></span></label>';
-        h += '<input id="adm_'+pfx+'" type="datetime-local" class="input-padrao" style="margin-bottom:2px;" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<div class="adm-wrapper">';
+        h += '<input id="adm_'+pfx+'" type="datetime-local" class="adm-input" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+',\''+bSetor+'\')">';
         h += '<div class="prog-wrap"><div class="prog-fill" id="prog_'+pfx+'"></div></div>';
-        h += '</div>';
+        h += '</div></div>';
 
         h += '<div class="detail-col" style="flex:1.2;"><label>Pendência Importante</label><select id="pd_sel_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var p=0; p<pend_options.length; p++) h += '<option value="'+pend_options[p]+'" '+(b.pd_sel===pend_options[p]?'selected':'')+'>'+pend_options[p]+'</option>';
@@ -353,7 +355,7 @@ function rnd() {
         h += '</select></div>';
         h += '</div>'; // Fecha Linha 1
 
-        // Linha 2 (Textos Livres e Especialidades)
+        // Linha 2 (Textos Livres e Especialidades integradas à direita)
         h += '<div class="bed-row">';
         h += '<div class="detail-col" style="flex:1.5;"><label>Diagnóstico / HD</label><textarea id="dg_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.dg)+'</textarea></div>';
         h += '<div class="detail-col" style="flex:1;"><label>Scores Clínicos</label><textarea id="sc_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.sc)+'</textarea></div>';
@@ -504,11 +506,14 @@ function tmrs() {
         var b = ST[i];
         if(!b.adm) continue;
         var pfx = (b.setor || 'emergencia') + '_' + b.n;
-        var admEl = document.getElementById('adm_'+pfx);
         
-        if(admEl && admEl.parentElement) {
+        // Pega elemento label que tem o span de texto
+        var admWrapper = document.getElementById('adm_'+pfx)?.parentElement;
+        var label = admWrapper?.parentElement.querySelector('label');
+
+        if(label) {
             var hh = hD(b.adm);
-            var permText = admEl.parentElement.querySelector('.perm-text-mini');
+            var permText = label.querySelector('.perm-text-mini');
             if(permText) permText.innerHTML = hh.txt;
 
             // Lógica da Barra de Progresso
@@ -642,7 +647,7 @@ function iniciarBancoDeDados() {
 }
 
 window.addEventListener('beforeunload', function (e) { saveAll(); });
-setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 1000); // Roda a cada segundo para atualizar a barra suavemente
+setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 1000); 
 upDateTime();
 </script>
 </body>
