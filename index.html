@@ -255,6 +255,13 @@ var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', '
 function g(id) { return document.getElementById(id); }
 function esc(s) { return (s||'').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
+// CORREÇÃO DO FUSO HORÁRIO: Função para extrair a data exata local sem converter pra UTC
+function getLocalISO() {
+    var d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().substring(0,16);
+}
+
 function gb(n, setor) { 
     for(var i=0; i<ST.length; i++) { 
         if(ST[i].n === n && (ST[i].setor || 'emergencia') === setor) return ST[i]; 
@@ -282,7 +289,7 @@ function mudarAba(aba) {
     rnd(); upSum();
 }
 
-// ===== RENDERIZAÇÃO PRINCIPAL (CARDS E ALINHAMENTO FLEXBOX) =====
+// ===== RENDERIZAÇÃO PRINCIPAL =====
 function rnd() {
     var wrapper = g('tb'); if(!wrapper) return;
     var h = '';
@@ -304,7 +311,7 @@ function rnd() {
         // Card Container
         h += '<div class="bed-card ' + statusClass + '">';
 
-        // Card Header (Identificação: Nome -> Idade -> Origem)
+        // Card Header
         h += '<div class="bed-header">';
         h += '<div class="leito-badge">' + b.n + '</div>';
         h += '<div class="header-inputs">';
@@ -322,7 +329,7 @@ function rnd() {
         var displayStyle = isExpanded ? 'display:flex;' : 'display:none;';
         h += '<div class="bed-body" style="'+displayStyle+'">';
 
-        // Linha 1 (Parâmetros, Admissão Encapsulada, Protocolos Integrados)
+        // Linha 1
         h += '<div class="bed-row">';
         h += '<div class="detail-col" style="flex:0.8;"><label>Convênio</label><select id="cv_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var c=0; c<cv_options.length; c++) h += '<option value="'+cv_options[c]+'" '+(b.cv===cv_options[c]?'selected':'')+'>'+cv_options[c]+'</option>';
@@ -332,7 +339,6 @@ function rnd() {
         for(var l=0; l<lc_options.length; l++) h += '<option value="'+lc_options[l].val+'" '+(b.lc===lc_options[l].val?'selected':'')+'>'+lc_options[l].txt+'</option>';
         h += '</select></div>';
 
-        // Caixa de admissão com barra de progresso embutida (Altura travada em 38px)
         h += '<div class="detail-col" style="flex:1.2;"><label>Entrada <span class="perm-text-mini"></span></label>';
         h += '<div class="adm-wrapper">';
         h += '<input id="adm_'+pfx+'" type="datetime-local" class="adm-input" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+',\''+bSetor+'\')">';
@@ -353,9 +359,9 @@ function rnd() {
         h += '<div class="detail-col" style="flex:0.8;"><label>Destino</label><select id="df_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var d=0; d<df_options.length; d++) h += '<option value="'+df_options[d].val+'" '+(b.df===df_options[d].val?'selected':'')+'>'+df_options[d].txt+'</option>';
         h += '</select></div>';
-        h += '</div>'; // Fecha Linha 1
+        h += '</div>';
 
-        // Linha 2 (Textos Livres e Especialidades integradas à direita)
+        // Linha 2
         h += '<div class="bed-row">';
         h += '<div class="detail-col" style="flex:1.5;"><label>Diagnóstico / HD</label><textarea id="dg_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.dg)+'</textarea></div>';
         h += '<div class="detail-col" style="flex:1;"><label>Scores Clínicos</label><textarea id="sc_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.sc)+'</textarea></div>';
@@ -370,10 +376,9 @@ function rnd() {
         var bEs = []; try { bEs = JSON.parse(b.es || '[]'); } catch(err) { if(b.es && b.es !== '') bEs = [b.es]; }
         for(var t=0; t<bEs.length; t++) { h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+bSetor+'\',\''+esc(bEs[t])+'\')">✕</span></div>'; }
         h += '</div></div>';
-        h += '</div>'; // Fecha Linha 2
+        h += '</div>';
 
-        h += '</div>'; // Fecha bed-body
-        h += '</div>'; // Fecha bed-card
+        h += '</div></div>';
     }
     wrapper.innerHTML = h;
     tmrs();
@@ -385,7 +390,10 @@ function svC(n, setor) {
     var pfx = setor + '_' + n;
     b.pac = g('pac_'+pfx).value; b.idade = g('idade_'+pfx).value; b.ori = g('ori_'+pfx).value;
     b.cv = g('cv_'+pfx).value; b.lc = g('lc_'+pfx).value; 
-    var admEl = g('adm_'+pfx); if(admEl && admEl.value) b.adm = new Date(admEl.value).toISOString();
+    
+    // CORREÇÃO: Salvar diretamente o valor cru digitado (sem converter para ISO/UTC)
+    var admEl = g('adm_'+pfx); 
+    if(admEl && admEl.value) { b.adm = admEl.value; }
     
     if(g('pd_sel_'+pfx)) b.pd_sel = g('pd_sel_'+pfx).value;
     if(g('df_'+pfx)) b.df = g('df_'+pfx).value;
@@ -442,7 +450,8 @@ function transferir(n, setorOrigem) {
 function addLeito() {
     var maxN = 0;
     for(var i=0; i<ST.length; i++) { if((ST[i].setor || 'emergencia') === currentAba && ST[i].n > maxN) maxN = ST[i].n; }
-    ST.push({ n: maxN + 1, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: currentAba });
+    // CORREÇÃO: Utilizando o getLocalISO() para leitos novos
+    ST.push({ n: maxN + 1, pac: '', idade: '', adm: getLocalISO(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: currentAba });
     saveAll(); rnd(); upSum();
 }
 
@@ -507,7 +516,6 @@ function tmrs() {
         if(!b.adm) continue;
         var pfx = (b.setor || 'emergencia') + '_' + b.n;
         
-        // Pega elemento label que tem o span de texto
         var admWrapper = document.getElementById('adm_'+pfx)?.parentElement;
         var label = admWrapper?.parentElement.querySelector('label');
 
@@ -516,23 +524,20 @@ function tmrs() {
             var permText = label.querySelector('.perm-text-mini');
             if(permText) permText.innerHTML = hh.txt;
 
-            // Lógica da Barra de Progresso
             var progEl = document.getElementById('prog_'+pfx);
             if(progEl) {
                 var d = new Date(b.adm), n = new Date(), diff = n - d;
                 if(diff < 0) diff = 0;
                 var hours = diff / 3600000;
                 
-                // Calcula % baseado em 30 horas
                 var pct = (hours / 30) * 100;
                 if(pct > 100) pct = 100;
                 progEl.style.width = pct + '%';
 
-                // Cores do gatilho clínico
-                var cor = '#3b82f6'; // Azul (< 10h)
-                if (hours >= 30) cor = '#ef4444'; // Vermelho (>= 30h)
-                else if (hours >= 20) cor = '#f97316'; // Laranja (20h-30h)
-                else if (hours >= 10) cor = '#eab308'; // Amarelo (10h-20h)
+                var cor = '#3b82f6'; 
+                if (hours >= 30) cor = '#ef4444'; 
+                else if (hours >= 20) cor = '#f97316'; 
+                else if (hours >= 10) cor = '#eab308'; 
                 
                 progEl.style.backgroundColor = cor;
             }
@@ -639,8 +644,9 @@ function iniciarBancoDeDados() {
             rnd(); upSum();
         } else {
             ST = [];
-            for(var i=1; i<=10; i++) ST.push({ n: i, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'emergencia' });
-            for(var j=1; j<=5; j++) ST.push({ n: j, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'observacao' });
+            // CORREÇÃO: Utilizando getLocalISO() para inicializar com o horário certo sem somar as 3h do UTC
+            for(var i=1; i<=10; i++) ST.push({ n: i, pac: '', idade: '', adm: getLocalISO(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'emergencia' });
+            for(var j=1; j<=5; j++) ST.push({ n: j, pac: '', idade: '', adm: getLocalISO(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'observacao' });
             saveAll();
         }
     }, function(error) { console.error("Erro no banco: ", error); });
