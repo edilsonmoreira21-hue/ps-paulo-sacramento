@@ -95,9 +95,13 @@ select.input-padrao option { background: #0f172a; color: #f8fafc; }
 .input-tempo { height: 20px; padding: 0 4px; font-size: 11px; border: 1px solid #334155; border-radius: 4px; color: #94a3b8; outline: none; background: #020617; }
 .perm-text-mini { font-size: 10px; font-weight: 700; color: #cbd5e1; text-align: center; }
 
-/* Botão Limpar */
-.btn-clear { padding: 0 12px; height: 38px; border: 1px solid #334155; border-radius: 6px; background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; color: #94a3b8; transition: .2s; width: 100%; }
-.btn-clear:hover { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
+/* Ações e Botões Compactos na Tabela */
+.acoes-wrapper { display: flex; flex-direction: column; gap: 4px; height: 38px; }
+.btn-acao-mini { flex: 1; border: 1px solid #334155; border-radius: 4px; background: transparent; font-size: 10px; font-weight: 700; cursor: pointer; transition: .2s; width: 100%; display: flex; align-items: center; justify-content: center; }
+.btn-acao-mini.limpar { color: #94a3b8; }
+.btn-acao-mini.limpar:hover { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
+.btn-acao-mini.transf { color: #3b82f6; border-color: #1e3a8a; }
+.btn-acao-mini.transf:hover { background: #1e3a8a; color: #bfdbfe; border-color: #3b82f6; }
 
 /* ===== CAIXA DE DETALHES (FLEXBOX APLICADO) ===== */
 .detail-row td { padding: 0 12px 12px 12px !important; }
@@ -199,13 +203,13 @@ select.input-padrao option { background: #0f172a; color: #f8fafc; }
                 <tr>
                     <th style="width:4%; text-align:center;">Leito</th>
                     <th style="width:22%;">Paciente</th>
-                    <th style="width:6%;">Idade</th>
-                    <th style="width:10%;">Convênio</th>
-                    <th style="width:12%;">Sistema</th>
-                    <th style="width:12%;">Entrada</th>
+                    <th style="width:5%;">Idade</th>
+                    <th style="width:9%;">Convênio</th>
+                    <th style="width:11%;">Sistema</th>
+                    <th style="width:11%;">Entrada</th>
                     <th style="width:16%;">Pendência Importante</th>
                     <th style="width:10%;">Destino</th>
-                    <th style="width:8%; text-align:center;">Ações</th>
+                    <th style="width:12%; text-align:center;">Ações</th>
                 </tr>
             </thead>
             <tbody id="tb"></tbody>
@@ -236,12 +240,8 @@ function fazerLogin() {
     if(erroEl) erroEl.style.display = 'none';
 
     auth.signInWithEmailAndPassword(e, s).catch(function(error) {
-        if(erroEl) {
-            erroEl.innerText = 'Erro no login: ' + error.message;
-            erroEl.style.display = 'block';
-        } else {
-            alert('Erro no login: ' + error.message);
-        }
+        if(erroEl) { erroEl.innerText = 'Erro no login: ' + error.message; erroEl.style.display = 'block'; } 
+        else { alert('Erro no login: ' + error.message); }
     });
 }
 
@@ -277,7 +277,14 @@ var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', '
 
 function g(id) { return document.getElementById(id); }
 function esc(s) { return (s||'').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
-function gb(n) { for(var i=0; i<ST.length; i++) { if(ST[i].n === n) return ST[i]; } return null; }
+
+// Busca garantindo Setor e Numero para evitar conflito de leitos entre abas
+function gb(n, setor) { 
+    for(var i=0; i<ST.length; i++) { 
+        if(ST[i].n === n && (ST[i].setor || 'emergencia') === setor) return ST[i]; 
+    } 
+    return null; 
+}
 
 function hD(iso) {
     if(!iso) return { txt: '', colorClass: '' };
@@ -319,57 +326,64 @@ function rnd() {
         var isExpanded = !isVazio; 
         var expClass = isExpanded ? ' is-expanded' : '';
 
+        // O ID de cada elemento formulário agora leva o setor como prefixo
+        var pfx = bSetor + '_' + b.n;
+
         h += '<tbody class="bed-group ' + statusClass + expClass + '">';
         h += '<tr class="main-row">';
         h += '<td style="text-align:center;"><div class="leito-badge">' + b.n + '</div></td>';
-        h += '<td><input id="pac_'+b.n+'" class="input-padrao input-nome" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+')"></td>';
-        h += '<td><input id="idade_'+b.n+'" type="number" class="input-padrao" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+')"></td>';
+        h += '<td><input id="pac_'+pfx+'" class="input-padrao input-nome" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+',\''+bSetor+'\')"></td>';
+        h += '<td><input id="idade_'+pfx+'" type="number" class="input-padrao" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+',\''+bSetor+'\')"></td>';
         
-        h += '<td><select id="cv_'+b.n+'" class="input-padrao" onchange="svC('+b.n+')">';
+        h += '<td><select id="cv_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var c=0; c<cv_options.length; c++) h += '<option value="'+cv_options[c]+'" '+(b.cv===cv_options[c]?'selected':'')+'>'+cv_options[c]+'</option>';
         h += '</select></td>';
 
-        h += '<td><select id="lc_'+b.n+'" class="input-padrao" onchange="svC('+b.n+')">';
+        h += '<td><select id="lc_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var l=0; l<lc_options.length; l++) h += '<option value="'+lc_options[l].val+'" '+(b.lc===lc_options[l].val?'selected':'')+'>'+lc_options[l].txt+'</option>';
         h += '</select></td>';
 
-        h += '<td><div class="td-tempo-wrapper"><input id="adm_'+b.n+'" type="datetime-local" class="input-tempo" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+')"><div class="tempo-texto perm-text-mini"></div></div></td>';
+        h += '<td><div class="td-tempo-wrapper"><input id="adm_'+pfx+'" type="datetime-local" class="input-tempo" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+',\''+bSetor+'\')"><div class="tempo-texto perm-text-mini"></div></div></td>';
 
-        h += '<td><select id="pd_sel_'+b.n+'" class="input-padrao" onchange="svC('+b.n+')">';
+        h += '<td><select id="pd_sel_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var p=0; p<pend_options.length; p++) h += '<option value="'+pend_options[p]+'" '+(b.pd_sel===pend_options[p]?'selected':'')+'>'+pend_options[p]+'</option>';
         h += '</select></td>';
 
-        h += '<td><select id="df_'+b.n+'" class="input-padrao" onchange="svC('+b.n+')">';
+        h += '<td><select id="df_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var d=0; d<df_options.length; d++) h += '<option value="'+df_options[d].val+'" '+(b.df===df_options[d].val?'selected':'')+'>'+df_options[d].txt+'</option>';
         h += '</select></td>';
 
-        h += '<td><button class="btn-clear" onclick="clC('+b.n+')">Limpar</button></td>';
+        // Botões de Ação na Coluna
+        h += '<td><div class="acoes-wrapper">';
+        h += '<button class="btn-acao-mini transf" onclick="transferir('+b.n+',\''+bSetor+'\')" title="Transferir Setor">Transf.</button>';
+        h += '<button class="btn-acao-mini limpar" onclick="clC('+b.n+',\''+bSetor+'\')">Limpar</button>';
+        h += '</div></td>';
         h += '</tr>';
 
         var displayStyle = isExpanded ? '' : 'display:none;';
         h += '<tr class="detail-row" style="'+displayStyle+'"><td colspan="9">';
         h += '<div class="detail-box">';
 
-        h += '<div class="detail-col col-origem"><label>Origem</label><input id="ori_'+b.n+'" class="input-padrao" value="'+esc(b.ori)+'" onblur="svC('+b.n+')"></div>';
-        h += '<div class="detail-col col-diag"><label>Diagnóstico / HD</label><textarea id="dg_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.dg)+'</textarea></div>';
-        h += '<div class="detail-col col-scores"><label>Scores Clínicos</label><textarea id="sc_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.sc)+'</textarea></div>';
-        h += '<div class="detail-col col-exames"><label>Exames Solicitados</label><textarea id="ex_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.ex)+'</textarea></div>';
-        h += '<div class="detail-col col-pendencia"><label>Condutas / Pendências</label><textarea id="cd_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.cd)+'</textarea></div>';
+        h += '<div class="detail-col col-origem"><label>Origem</label><input id="ori_'+pfx+'" class="input-padrao" value="'+esc(b.ori)+'" onblur="svC('+b.n+',\''+bSetor+'\')"></div>';
+        h += '<div class="detail-col col-diag"><label>Diagnóstico / HD</label><textarea id="dg_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.dg)+'</textarea></div>';
+        h += '<div class="detail-col col-scores"><label>Scores Clínicos</label><textarea id="sc_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.sc)+'</textarea></div>';
+        h += '<div class="detail-col col-exames"><label>Exames Solicitados</label><textarea id="ex_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.ex)+'</textarea></div>';
+        h += '<div class="detail-col col-pendencia"><label>Condutas / Pendências</label><textarea id="cd_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.cd)+'</textarea></div>';
 
         h += '<div class="detail-col col-protocolos"><label>Protocolos</label><div class="tags-edit">';
         var bPr = typeof b.pr === 'string' ? JSON.parse(b.pr || '[]') : (b.pr || []);
         for(var pr=0; pr<prot_options.length; pr++) {
-            h += '<div class="tag-edit' + (bPr.indexOf(prot_options[pr]) > -1 ? ' on' : '') + '" onclick="tgPr('+b.n+',\''+esc(prot_options[pr])+'\')">' + prot_options[pr] + '</div>';
+            h += '<div class="tag-edit' + (bPr.indexOf(prot_options[pr]) > -1 ? ' on' : '') + '" onclick="tgPr('+b.n+',\''+bSetor+'\',\''+esc(prot_options[pr])+'\')">' + prot_options[pr] + '</div>';
         }
         h += '</div></div>';
 
         h += '<div class="detail-col col-especialidades"><label>Especialidades</label><div class="input-group-add">';
-        h += '<select class="input-padrao" style="height:32px; padding: 0 6px; font-size: 12px;" id="sel_es_'+b.n+'"><option value="">Selecione...</option>';
+        h += '<select class="input-padrao" style="height:32px; padding: 0 6px; font-size: 12px;" id="sel_es_'+pfx+'"><option value="">Selecione...</option>';
         for(var e=0; e<esp_options.length; e++) { h += '<option value="'+esp_options[e]+'">'+esp_options[e]+'</option>'; }
-        h += '</select><button class="btn-add-tag" onclick="addEs('+b.n+')">+</button></div>';
+        h += '</select><button class="btn-add-tag" onclick="addEs('+b.n+',\''+bSetor+'\')">+</button></div>';
         h += '<div class="tags-selected">';
         var bEs = []; try { bEs = JSON.parse(b.es || '[]'); } catch(err) { if(b.es && b.es !== '') bEs = [b.es]; }
-        for(var t=0; t<bEs.length; t++) { h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+esc(bEs[t])+'\')">✕</span></div>'; }
+        for(var t=0; t<bEs.length; t++) { h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+bSetor+'\',\''+esc(bEs[t])+'\')">✕</span></div>'; }
         h += '</div></div>';
 
         h += '</div></td></tr></tbody>'; 
@@ -379,67 +393,108 @@ function rnd() {
     tmrs();
 }
 
-// ===== INTERAÇÃO E SALVAMENTO =====
-function svC(n) {
-    var b = gb(n); if(!b) return;
-    b.pac = g('pac_'+n).value; b.idade = g('idade_'+n).value; 
-    b.cv = g('cv_'+n).value; b.lc = g('lc_'+n).value; 
-    var admEl = g('adm_'+n); if(admEl && admEl.value) b.adm = new Date(admEl.value).toISOString();
+// ===== INTERAÇÃO, SALVAMENTO E TRANSFERÊNCIA =====
+function svC(n, setor) {
+    var b = gb(n, setor); if(!b) return;
+    var pfx = setor + '_' + n;
+    b.pac = g('pac_'+pfx).value; b.idade = g('idade_'+pfx).value; 
+    b.cv = g('cv_'+pfx).value; b.lc = g('lc_'+pfx).value; 
+    var admEl = g('adm_'+pfx); if(admEl && admEl.value) b.adm = new Date(admEl.value).toISOString();
     
-    if(g('pd_sel_'+n)) b.pd_sel = g('pd_sel_'+n).value;
-    if(g('df_'+n)) b.df = g('df_'+n).value;
+    if(g('pd_sel_'+pfx)) b.pd_sel = g('pd_sel_'+pfx).value;
+    if(g('df_'+pfx)) b.df = g('df_'+pfx).value;
 
-    var oriEl = g('ori_'+n); if(oriEl) b.ori = oriEl.value;
-    var dgEl = g('dg_'+n); if(dgEl) b.dg = dgEl.value;
-    var scEl = g('sc_'+n); if(scEl) b.sc = scEl.value; 
-    var exEl = g('ex_'+n); if(exEl) b.ex = exEl.value;
-    var cdEl = g('cd_'+n); if(cdEl) b.cd = cdEl.value; 
+    var oriEl = g('ori_'+pfx); if(oriEl) b.ori = oriEl.value;
+    var dgEl = g('dg_'+pfx); if(dgEl) b.dg = dgEl.value;
+    var scEl = g('sc_'+pfx); if(scEl) b.sc = scEl.value; 
+    var exEl = g('ex_'+pfx); if(exEl) b.ex = exEl.value;
+    var cdEl = g('cd_'+pfx); if(cdEl) b.cd = cdEl.value; 
 
     saveAll(); upSum(); rnd();
 }
 
-function clC(n) {
-    var b = gb(n); if(!b) return;
+function clC(n, setor) {
+    var b = gb(n, setor); if(!b) return;
     b.pac = ''; b.idade = ''; b.ori = ''; b.dg = ''; b.sc = ''; b.ex = ''; b.cd = '';
     b.pr = '[]'; b.es = '[]'; b.df = 'vazio'; b.lc = 'sam'; b.pd_sel = 'Nenhuma'; 
     saveAll(); rnd(); upSum();
 }
 
+function transferir(n, setorOrigem) {
+    var bOrigem = gb(n, setorOrigem);
+    if(!bOrigem || !bOrigem.pac || bOrigem.pac.trim() === '') {
+        alert('Leito vazio. Não há paciente para transferir.'); return;
+    }
+
+    var setorDestino = (setorOrigem === 'emergencia') ? 'observacao' : 'emergencia';
+    var nomeDestino = (setorDestino === 'emergencia') ? 'Emergência' : 'Observação';
+
+    if(!confirm('Deseja transferir o paciente ' + bOrigem.pac + ' para a ' + nomeDestino + '?')) return;
+
+    var bDestino = null;
+    var leitosDestino = ST.filter(b => (b.setor || 'emergencia') === setorDestino).sort((a,b) => a.n - b.n);
+    
+    for(var i=0; i<leitosDestino.length; i++) {
+        if(!leitosDestino[i].pac || leitosDestino[i].pac.trim() === '') {
+            bDestino = leitosDestino[i]; break;
+        }
+    }
+
+    if(!bDestino) {
+        var maxN = 0;
+        for(var i=0; i<leitosDestino.length; i++) { if(leitosDestino[i].n > maxN) maxN = leitosDestino[i].n; }
+        bDestino = { n: maxN + 1, setor: setorDestino };
+        ST.push(bDestino);
+    }
+
+    bDestino.pac = bOrigem.pac; bDestino.idade = bOrigem.idade; bDestino.adm = bOrigem.adm;
+    bDestino.cv = bOrigem.cv; bDestino.lc = bOrigem.lc; bDestino.ori = bOrigem.ori;
+    bDestino.dg = bOrigem.dg; bDestino.sc = bOrigem.sc; bDestino.pr = bOrigem.pr;
+    bDestino.ex = bOrigem.ex; bDestino.es = bOrigem.es; bDestino.cd = bOrigem.cd;
+    bDestino.df = bOrigem.df; bDestino.pd_sel = bOrigem.pd_sel;
+
+    bOrigem.pac = ''; bOrigem.idade = ''; bOrigem.ori = ''; bOrigem.dg = ''; bOrigem.sc = ''; bOrigem.ex = ''; bOrigem.cd = '';
+    bOrigem.pr = '[]'; bOrigem.es = '[]'; bOrigem.df = 'vazio'; bOrigem.lc = 'sam'; bOrigem.pd_sel = 'Nenhuma';
+
+    saveAll(); 
+    mudarAba(setorDestino);
+}
+
 function addLeito() {
     var maxN = 0;
-    for(var i=0; i<ST.length; i++) { if(ST[i].n > maxN) maxN = ST[i].n; }
-    var nn = maxN + 1;
-    ST.push({ n: nn, pac: '', idade: '', adm: new Date().toISOString(), cv: 'proprio', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: currentAba });
+    for(var i=0; i<ST.length; i++) { 
+        if((ST[i].setor || 'emergencia') === currentAba && ST[i].n > maxN) maxN = ST[i].n; 
+    }
+    ST.push({ n: maxN + 1, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: currentAba });
     saveAll(); rnd(); upSum();
 }
 
 function delLeito() {
     for (var i = ST.length - 1; i >= 0; i--) {
-        var bSetor = ST[i].setor || 'emergencia';
-        if (bSetor === currentAba) {
+        if ((ST[i].setor || 'emergencia') === currentAba) {
             ST.splice(i, 1); saveAll(); rnd(); upSum(); return;
         }
     }
     alert('Não há leitos para remover neste setor.');
 }
 
-function tgPr(n, val) {
-    var b = gb(n); if(!b) return;
+function tgPr(n, setor, val) {
+    var b = gb(n, setor); if(!b) return;
     var arr = typeof b.pr === 'string' ? JSON.parse(b.pr || '[]') : (b.pr || []);
     var idx = arr.indexOf(val);
     if(idx > -1) arr.splice(idx, 1); else arr.push(val);
     b.pr = JSON.stringify(arr); saveAll(); rnd();
 }
 
-function addEs(n) {
-    var sel = g('sel_es_'+n); if(!sel || !sel.value) return; 
-    var val = sel.value; var b = gb(n); if(!b) return;
+function addEs(n, setor) {
+    var sel = g('sel_es_'+setor+'_'+n); if(!sel || !sel.value) return; 
+    var val = sel.value; var b = gb(n, setor); if(!b) return;
     var arr = []; try { arr = JSON.parse(b.es || '[]'); } catch(e) { if(b.es && b.es !== '') arr = [b.es]; }
     if(arr.indexOf(val) === -1) { arr.push(val); b.es = JSON.stringify(arr); saveAll(); rnd(); }
 }
 
-function rmEs(n, val) {
-    var b = gb(n); if(!b) return;
+function rmEs(n, setor, val) {
+    var b = gb(n, setor); if(!b) return;
     var arr = []; try { arr = JSON.parse(b.es || '[]'); } catch(e) { if(b.es && b.es !== '') arr = [b.es]; }
     var idx = arr.indexOf(val);
     if(idx > -1) { arr.splice(idx, 1); b.es = JSON.stringify(arr); saveAll(); rnd(); }
@@ -477,7 +532,8 @@ function tmrs() {
         var b = ST[i];
         if(!b.adm) continue;
         var hh = hD(b.adm);
-        var permText = document.querySelector('#adm_'+b.n)?.parentElement.querySelector('.perm-text-mini');
+        var pfx = (b.setor || 'emergencia') + '_' + b.n;
+        var permText = document.querySelector('#adm_'+pfx)?.parentElement.querySelector('.perm-text-mini');
         if(permText) { permText.innerHTML = hh.txt; }
     }
 }
@@ -499,7 +555,7 @@ function upDateTime() {
 
 // ===== WHATSAPP EXPORT =====
 function exportarWhatsApp() {
-    var leitosAba = ST.filter(p => (p.setor || 'emergencia') === currentAba);
+    var leitosAba = ST.filter(p => (p.setor || 'emergencia') === currentAba).sort((a,b) => a.n - b.n);
     if (leitosAba.length === 0) { alert("Não há pacientes neste setor para exportar."); return; }
     
     let dataAtual = new Date().toLocaleDateString('pt-BR');
@@ -535,9 +591,7 @@ function saveAll() {
         leitos: JSON.stringify(ST),
         turno: turno,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).catch(function(error) {
-        console.error("Erro ao salvar: ", error);
-    });
+    }).catch(function(error) { console.error("Erro ao salvar: ", error); });
 }
 
 var unsubscribeDB = null;
@@ -547,26 +601,23 @@ function iniciarBancoDeDados() {
         .onSnapshot(function(doc) {
             if (doc.exists) {
                 var data = doc.data();
-                if (data.leitos) {
-                    try { ST = JSON.parse(data.leitos); } catch(e) { console.error("Erro ao ler leitos", e); }
-                }
+                if (data.leitos) { try { ST = JSON.parse(data.leitos); } catch(e) { console.error("Erro", e); } }
                 if (data.turno) { turno = data.turno; upTurno(); }
                 rnd(); upSum();
             } else {
                 ST = [];
-                for(var i=1; i<=10; i++) {
-                    ST.push({ n: i, pac: '', idade: '', adm: new Date().toISOString(), cv: 'proprio', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'emergencia' });
-                }
+                for(var i=1; i<=10; i++) ST.push({ n: i, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'emergencia' });
+                for(var i=1; i<=5; i++) ST.push({ n: i, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'observacao' });
                 saveAll();
             }
-        }, function(error) {
-            console.error("Erro na leitura do banco: ", error);
-        });
+        }, function(error) { console.error("Erro no banco: ", error); });
 }
 
 window.addEventListener('beforeunload', function (e) { saveAll(); });
 setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 30000);
 upDateTime();
 </script>
+</body>
+</html>
 </body>
 </html>
