@@ -10,153 +10,130 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-/* ===== RESET E VARIÁVEIS ===== */
+/* ===== RESET E VARIÁVEIS (PREMIUM DARK MODE) ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; min-height: 100vh; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; min-height: 100vh; }
 
-/* ===== TELA DE LOGIN ===== */
-#login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f1b2d, #1e3a8a); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-.login-box { background: #fff; padding: 40px; border-radius: 12px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-.login-box h2 { margin-bottom: 5px; color: #0f1b2d; }
-.login-box .subtitle { font-size: 12px; color: #64748b; margin-bottom: 20px; }
-.login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
+/* ===== TELA DE LOGIN & LGPD ===== */
+#login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #020617, #0f172a); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+.login-box { background: #1e293b; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
+.login-box h2 { margin-bottom: 5px; color: #f8fafc; }
+.login-box .subtitle { font-size: 13px; color: #94a3b8; margin-bottom: 24px; }
+.login-box input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; color: #f8fafc; border: 1px solid #334155; border-radius: 6px; font-size: 14px; outline: none; transition: 0.2s; }
+.login-box input:focus { border-color: #3b82f6; }
 .login-box button { width: 100%; padding: 12px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
 .login-box button:hover { background: #1d4ed8; }
 #login-erro { color: #ef4444; font-size: 12px; margin-top: 10px; display: none; }
+.lgpd-warning { margin-top: 24px; font-size: 11px; color: #64748b; line-height: 1.4; text-align: justify; padding-top: 16px; border-top: 1px solid #334155; }
+.lgpd-warning strong { color: #94a3b8; }
 
 /* ===== CABEÇALHO ===== */
-.main-header { background: #0f1b2d; color: #fff; padding: 12px 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+.main-header { background: #020617; color: #f8fafc; padding: 12px 24px; border-bottom: 1px solid #1e293b; }
 .header-inner { width: 100%; display: flex; justify-content: space-between; align-items: center; }
 .header-info h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.5px; }
-.header-info span { font-size: 12px; color: #94a3b8; }
+.header-info span { font-size: 12px; color: #64748b; }
 .header-meta { display: flex; align-items: center; gap: 12px; }
-.header-date { font-size: 12px; font-weight: 600; color: #cbd5e1; text-align: right; }
+.header-date { font-size: 12px; font-weight: 600; color: #94a3b8; text-align: right; }
+
+/* ===== ABAS (TABS) ===== */
+.tabs-container { display: flex; background: #0f172a; padding: 0 24px; border-bottom: 1px solid #1e293b; }
+.tab-btn { padding: 14px 24px; background: transparent; border: none; border-bottom: 3px solid transparent; font-size: 14px; font-weight: 700; color: #64748b; cursor: pointer; transition: 0.2s; }
+.tab-btn:hover { color: #e2e8f0; }
+.tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
 
 /* ===== BOTÕES PADRONIZADOS ===== */
-.btn-padrao, .btn-action { background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
-.btn-padrao:hover, .btn-action:hover { background: #1e293b; color: #fff; border-color: #64748b; }
-.turno-badge { background: #f59e0b; color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; }
+.btn-padrao, .btn-action { background: transparent; border: 1px solid #334155; color: #cbd5e1; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+.btn-padrao:hover, .btn-action:hover { background: #1e293b; color: #fff; border-color: #475569; }
+.turno-badge { background: #d97706; color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; }
 .turno-badge.noturno { background: #312e81; }
 
 /* ===== CONTADORES E FILTROS ===== */
-.dashboard-bar { background: #fff; padding: 12px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+.dashboard-bar { background: #0f172a; padding: 12px 24px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
-.fb { padding: 6px 14px; font-size: 12px; font-weight: 600; border: 1px solid #cbd5e1; background: #fff; color: #475569; border-radius: 20px; cursor: pointer; transition: 0.2s; }
-.fb:hover { background: #f1f5f9; }
-.fb.on { background: #0f1b2d; color: #fff; border-color: #0f1b2d; }
-.counters { display: flex; gap: 16px; font-size: 13px; font-weight: 600; padding: 12px 24px 0 24px; }
-.counter { font-size: 16px; font-weight: 800; }
+.fb { padding: 6px 14px; font-size: 12px; font-weight: 600; border: 1px solid #334155; background: #0f172a; color: #94a3b8; border-radius: 20px; cursor: pointer; transition: 0.2s; }
+.fb:hover { background: #1e293b; color: #e2e8f0; }
+.fb.on { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+.counters { display: flex; gap: 16px; font-size: 13px; font-weight: 600; padding: 12px 24px 0 24px; color: #cbd5e1; }
+.counter { font-size: 16px; font-weight: 800; color: #f8fafc; }
 
 /* ===== TABELA E ESTRUTURA DOS CARDS ===== */
 .table-wrap { padding: 12px 24px 24px 24px; width: 100%; }
 table { width: 100%; border-collapse: collapse; background: transparent; }
-thead th { text-align: left; padding: 10px 8px; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; border-bottom: 2px solid #cbd5e1; }
+thead th { text-align: left; padding: 10px 8px; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; border-bottom: 2px solid #334155; }
 
-/* Espaçamento entre os cards (tbodys) */
-tbody.bed-group { border-bottom: 12px solid #f8fafc; }
+/* Espaçamento entre os cards */
+tbody.bed-group { border-bottom: 12px solid #0f172a; }
 
-/* ===== CORES E BORDAS DO CARD ENVELOPADO ===== */
-tbody.bed-group tr td { padding: 8px; vertical-align: middle; border: none; }
+/* Cores e Bordas do Card Envelopado */
+tbody.bed-group tr td { padding: 8px; vertical-align: middle; border: none; background: #1e293b; }
+tbody.bed-group tr td:first-child { border-left: 6px solid #3b82f6; }
+tbody.bed-group tr.main-row td:first-child { border-top-left-radius: 8px; }
+tbody.bed-group tr.main-row td:last-child { border-top-right-radius: 8px; }
+tbody.bed-group:not(.is-expanded) tr.main-row td:first-child { border-bottom-left-radius: 8px; }
+tbody.bed-group:not(.is-expanded) tr.main-row td:last-child { border-bottom-right-radius: 8px; }
+tbody.bed-group.is-expanded tr.detail-row td:first-child { border-bottom-left-radius: 8px; }
+tbody.bed-group.is-expanded tr.detail-row td:last-child { border-bottom-right-radius: 8px; }
 
-/* Borda lateral contínua e cantos arredondados */
-tbody.bed-group tr td:first-child { border-left: 6px solid transparent; }
-tbody.bed-group tr.main-row td:first-child { border-top-left-radius: 12px; }
-tbody.bed-group tr.main-row td:last-child { border-top-right-radius: 12px; }
-tbody.bed-group:not(.is-expanded) tr.main-row td:first-child { border-bottom-left-radius: 12px; }
-tbody.bed-group:not(.is-expanded) tr.main-row td:last-child { border-bottom-right-radius: 12px; }
-tbody.bed-group.is-expanded tr.detail-row td:first-child { border-bottom-left-radius: 12px; }
-tbody.bed-group.is-expanded tr.detail-row td:last-child { border-bottom-right-radius: 12px; }
+/* Leitos Vazios */
+tbody.bed-group.is-vazio tr td { background: #0f172a; border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b; }
+tbody.bed-group.is-vazio tr td:first-child { border-left: 6px solid #334155; }
+tbody.bed-group.is-vazio tr td:last-child { border-right: 1px solid #1e293b; }
 
-/* Estável (Azul) */
-tbody.bed-group.is-estavel tr.main-row td { background: #93c5fd; }
-tbody.bed-group.is-estavel tr.detail-row td { background: #93c5fd; padding: 0 12px 12px 12px; }
-tbody.bed-group.is-estavel tr td:first-child { border-left-color: #2563eb; }
+/* ===== ELEMENTOS INTERNOS ===== */
+.leito-badge { background: #020617; color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-/* Crítico (Vermelho) */
-tbody.bed-group.is-critico tr.main-row td { background: #fca5a5; }
-tbody.bed-group.is-critico tr.detail-row td { background: #fca5a5; padding: 0 12px 12px 12px; }
-tbody.bed-group.is-critico tr td:first-child { border-left-color: #991b1b; }
-
-/* Atenção (Amarelo) - Borda mais espessa conforme solicitado */
-tbody.bed-group.is-atencao tr.main-row td { background: #fde047; }
-tbody.bed-group.is-atencao tr.detail-row td { background: #fde047; padding: 0 12px 12px 12px; }
-tbody.bed-group.is-atencao tr td:first-child { border-left: 8px solid #ca8a04; }
-
-/* Vazio (Cinza) */
-tbody.bed-group.is-vazio tr.main-row td { background: #f1f5f9; }
-tbody.bed-group.is-vazio tr.detail-row td { background: #f1f5f9; padding: 0 12px 12px 12px; }
-tbody.bed-group.is-vazio tr td:first-child { border-left-color: #cbd5e1; }
-
-/* ===== ELEMENTOS INTERNOS (INPUTS E BADGES) ===== */
-.leito-badge { background: #1e3a8a; color: #fff; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-
-/* Altura padronizada para todos os inputs da linha principal */
-.input-padrao { height: 38px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-family: inherit; width: 100%; background: #fff; color: #1e293b; outline: none; box-sizing: border-box; transition: 0.2s; }
-.input-padrao:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
-
-/* Cores dinâmicas para o nome do paciente */
-.input-nome { font-weight: 800; text-transform: uppercase; font-size: 14px; }
-tbody.bed-group.is-estavel .input-nome { color: #1e3a8a; }
-tbody.bed-group.is-critico .input-nome { color: #7f1d1d; }
-tbody.bed-group.is-atencao .input-nome { color: #854d0e; }
-tbody.bed-group.is-vazio .input-nome { color: #94a3b8; }
-
+/* Inputs Base Escuros */
+.input-padrao { height: 38px; padding: 0 10px; border: 1px solid #334155; border-radius: 6px; font-size: 13px; font-family: inherit; width: 100%; background: #0f172a; color: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; }
+.input-padrao:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+.input-nome { font-weight: 800; text-transform: uppercase; font-size: 14px; color: #f8fafc; }
+tbody.bed-group.is-vazio .input-nome { color: #64748b; }
 select.input-padrao { cursor: pointer; }
+select.input-padrao option { background: #0f172a; color: #f8fafc; }
 
-/* Tempo de permanência compactado e alinhado ao topo */
+/* Tempo de Permanência */
 .td-tempo-wrapper { height: 38px; display: flex; flex-direction: column; justify-content: flex-start; padding-top: 2px; gap: 2px; }
-.input-tempo { height: 20px; padding: 0 4px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; color: #475569; outline: none; background: #fff; }
-.perm-text-mini { font-size: 10px; font-weight: 700; color: #1e293b; text-align: center; }
+.input-tempo { height: 20px; padding: 0 4px; font-size: 11px; border: 1px solid #334155; border-radius: 4px; color: #94a3b8; outline: none; background: #020617; }
+.perm-text-mini { font-size: 10px; font-weight: 700; color: #cbd5e1; text-align: center; }
 
-.btn-clear { padding: 0 12px; height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 700; cursor: pointer; color: #64748b; transition: .2s; width: 100%; }
-.btn-clear:hover { background: #fee2e2; color: #ef4444; border-color: #fca5a5; }
+/* Botão Limpar */
+.btn-clear { padding: 0 12px; height: 38px; border: 1px solid #334155; border-radius: 6px; background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; color: #94a3b8; transition: .2s; width: 100%; }
+.btn-clear:hover { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
 
-/* ===== CAIXA BRANCA DE DETALHES ===== */
-.detail-box { 
-    background: #ffffff; 
-    border-radius: 8px; 
-    padding: 16px; 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-    border: 1px solid rgba(255,255,255,0.6); 
-    display: flex; 
-    gap: 12px; 
-    align-items: stretch; 
-    width: 100%;
-}
-.detail-flex-container { display: flex; gap: 12px; align-items: stretch; }
-.detail-col { display: flex; flex-direction: column; gap: 6px; } 
-.detail-col label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
+/* ===== CAIXA DE DETALHES (FLEXBOX APLICADO) ===== */
+.detail-row td { padding: 0 12px 12px 12px !important; }
+.detail-box { background: #020617; border-radius: 8px; padding: 16px; border: 1px solid #334155; display: flex; gap: 12px; align-items: stretch; width: 100%; }
+.detail-col { display: flex; flex-direction: column; gap: 6px; }
+.detail-col label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
 
-/* Proporções das colunas internas */
 .col-origem { flex: 0.5; }
 .col-diag { flex: 1.5; }
 .col-scores { flex: 0.8; }
 .col-exames { flex: 1.5; }
-.col-pendencia { flex: 1; } 
-.col-protocolos { flex: 0.8; } 
-.col-especialidades { flex: 1; } 
+.col-pendencia { flex: 1.5; }
+.col-protocolos { flex: 0.8; }
+.col-especialidades { flex: 1; }
 
-.detail-col textarea { width: 100%; height: 65px; resize: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 12px; outline: none; font-family: inherit; background: #fff; line-height: 1.4; }
+.detail-col textarea { width: 100%; height: 65px; resize: none; border: 1px solid #334155; border-radius: 6px; padding: 8px; font-size: 12px; outline: none; font-family: inherit; background: #0f172a; color: #f8fafc; line-height: 1.4; }
 .detail-col textarea:focus { border-color: #3b82f6; }
 
-/* Tags reduzidas conforme solicitado */
+/* Tags */
 .tags-edit { display: flex; flex-wrap: wrap; gap: 4px; }
-.tag-edit { padding: 2px 8px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 10px; font-weight: 700; cursor: pointer; color: #475569; transition: 0.2s; }
-.tag-edit.on { background: #0f1b2d; color: #fff; border-color: #0f1b2d; }
+.tag-edit { padding: 2px 8px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; font-size: 10px; font-weight: 700; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+.tag-edit.on { background: #1e3a8a; color: #bfdbfe; border-color: #3b82f6; }
 
 .input-group-add { display: flex; gap: 4px; }
-.input-group-add select { flex: 1; height: 28px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; outline: none; }
-.btn-add-tag { width: 28px; height: 28px; background: #2563eb; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-.btn-add-tag:hover { background: #1d4ed8; }
+.input-group-add select { flex: 1; height: 28px; border: 1px solid #334155; border-radius: 4px; font-size: 11px; outline: none; background: #0f172a; color: #f8fafc; }
+.btn-add-tag { width: 28px; height: 28px; background: #3b82f6; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.btn-add-tag:hover { background: #2563eb; }
 
 .tags-selected { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-.tag-selected { padding: 2px 6px; background: #e0e7ff; color: #1e40af; border-radius: 10px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 4px; border: 1px solid #bfdbfe; }
-.tag-remove { cursor: pointer; color: #ef4444; font-weight: bold; font-size: 10px; }
-.tag-remove:hover { color: #991b1b; }
-    
+.tag-selected { padding: 2px 6px; background: #1e3a8a; color: #bfdbfe; border-radius: 10px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 4px; border: 1px solid #3b82f6; }
+.tag-remove { cursor: pointer; color: #fca5a5; font-weight: bold; font-size: 10px; }
+.tag-remove:hover { color: #ef4444; }
 </style>
 </head>
 <body>
+
 <div id="login-screen">
     <div class="login-box">
         <h2>Pronto Socorro</h2>
@@ -165,6 +142,9 @@ select.input-padrao { cursor: pointer; }
         <input type="password" id="senha" placeholder="Senha">
         <button onclick="fazerLogin()">Acessar Sistema</button>
         <div id="login-erro"></div>
+        <div class="lgpd-warning">
+            <strong>⚠️ Atenção (LGPD):</strong> Este sistema lida com Dados Pessoais Sensíveis de saúde. O acesso é estritamente restrito à finalidade de assistência ao paciente. É terminantemente proibida a captura de tela, cópia indevida ou compartilhamento destas informações em ambientes não homologados.
+        </div>
     </div>
 </div>
 
@@ -185,6 +165,11 @@ select.input-padrao { cursor: pointer; }
         </div>
     </header>
 
+    <div class="tabs-container">
+        <button id="tab-emergencia" class="tab-btn active" onclick="mudarAba('emergencia')">Emergência</button>
+        <button id="tab-observacao" class="tab-btn" onclick="mudarAba('observacao')">Observação</button>
+    </div>
+
     <div class="dashboard-bar">
         <div class="filters">
             <button class="fb on" onclick="fil(this, 'all')">Todos</button>
@@ -196,7 +181,7 @@ select.input-padrao { cursor: pointer; }
             <button class="btn-action btn-add" onclick="addLeito()">+ Adicionar Leito</button>
             <button class="btn-action btn-rm" onclick="delLeito()">Remover Ultimo</button>
             <button class="btn-action btn-print" onclick="window.print()">Imprimir</button>
-            <button class="btn-action btn-wpp" onclick="exportarWhatsApp()">Exportar para WhatsApp</button>
+            <button class="btn-action btn-wpp" onclick="exportarWhatsApp()">Exportar Plantão</button>
         </div>
     </div>
 
@@ -260,9 +245,7 @@ function fazerLogin() {
     });
 }
 
-function fazerLogout() { 
-    auth.signOut(); 
-}
+function fazerLogout() { auth.signOut(); }
 
 auth.onAuthStateChanged(function(user) {
     var loginScreen = document.getElementById('login-screen');
@@ -271,7 +254,7 @@ auth.onAuthStateChanged(function(user) {
     if (user) {
         if(loginScreen) loginScreen.style.display = 'none';
         if(appContent) appContent.style.display = 'block';
-        iniciarBancoDeDados(); // Carrega os dados só depois de logar
+        iniciarBancoDeDados(); 
     } else {
         if(loginScreen) loginScreen.style.display = 'flex';
         if(appContent) appContent.style.display = 'none';
@@ -279,17 +262,15 @@ auth.onAuthStateChanged(function(user) {
     }
 });
 
-// ===== VARIÁVEIS GLOBAIS =====
+// ===== VARIÁVEIS GLOBAIS E ABAS =====
 var ST = [];
 var currentFilter = 'all';
 var turno = 'diurno';
+var currentAba = 'emergencia';
 
-var currentFilter = 'all';
-var turno = 'diurno';
-
-var cv_options = ['PROPRIO', 'EXTERNO', 'PARTICULAR', 'SUS'];
-var lc_options = [{val:'sam', txt:'SAM - Emergencia'}, {val:'int', txt:'SIGA - Internados'}];
-var pend_options = ['Nenhuma', 'Exames Laboratoriais', 'Exames de Imagem', 'Avaliação Especialista', 'Centro Cirúrgico', 'PSM: 30hrs', 'DHD', 'CATE'];
+var cv_options = ['PROPRIO', 'CONVENIO', 'PARTICULAR', 'SUS'];
+var lc_options = [{val:'sam', txt:'SAM - Emergencia'}, {val:'int', txt:'Internados'}];
+var pend_options = ['Nenhuma', 'Exames Laboratoriais', 'Exames de Imagem', 'Avaliação Especialista', 'Centro Cirúrgico', 'Vaga Enfermaria', 'Vaga UTI', 'Reavaliação'];
 var df_options = [{val:'vazio', txt:'Vazio'}, {val:'reavaliacao', txt:'Reavaliacao'}, {val:'enfermaria', txt:'Enfermaria'}, {val:'uti', txt:'UTI'}, {val:'alta', txt:'Alta'}];
 var prot_options = ['Sepse', 'Dor Toracica', 'AVC'];
 var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', 'Nefrologia', 'Cirurgia', 'Pediatria', 'GO'];
@@ -303,8 +284,20 @@ function hD(iso) {
     var d = new Date(iso), n = new Date(), diff = n - d;
     if(diff < 0) return { txt: '0h 0m de permanência', colorClass: '' };
     var h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000);
-    var c = ''; if(h >= 24) c = 'critico'; else if(h >= 12) c = 'atencao';
-    return { txt: h + 'h ' + m + 'm de permanência', colorClass: c };
+    return { txt: h + 'h ' + m + 'm de permanência', colorClass: '' };
+}
+
+function mudarAba(aba) {
+    currentAba = aba;
+    document.getElementById('tab-emergencia').classList.remove('active');
+    document.getElementById('tab-observacao').classList.remove('active');
+    document.getElementById('tab-' + aba).classList.add('active');
+    
+    currentFilter = 'all';
+    var bts = document.querySelectorAll('.fb');
+    for(var i=0; i<bts.length; i++) bts[i].classList.remove('on');
+    bts[0].classList.add('on');
+    rnd(); upSum();
 }
 
 // ===== RENDERIZAÇÃO PRINCIPAL (RND) =====
@@ -313,20 +306,20 @@ function rnd() {
     var h = '';
     for(var i=0; i<ST.length; i++) {
         var b = ST[i];
+        var bSetor = b.setor || 'emergencia'; 
+        if(bSetor !== currentAba) continue; 
+
         if(currentFilter !== 'all') {
             if(currentFilter === 'vazio' && b.pac && b.pac.trim() !== '') continue;
             if(currentFilter !== 'vazio' && b.df !== currentFilter) continue;
         }
 
         var isVazio = (!b.pac || b.pac.trim() === '');
-        // Como removemos o status, o padrão visual será estavel ou vazio
         var statusClass = isVazio ? 'is-vazio' : 'is-estavel'; 
         var isExpanded = !isVazio; 
         var expClass = isExpanded ? ' is-expanded' : '';
 
         h += '<tbody class="bed-group ' + statusClass + expClass + '">';
-
-        // LINHA PRINCIPAL
         h += '<tr class="main-row">';
         h += '<td style="text-align:center;"><div class="leito-badge">' + b.n + '</div></td>';
         h += '<td><input id="pac_'+b.n+'" class="input-padrao input-nome" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+')"></td>';
@@ -353,20 +346,14 @@ function rnd() {
         h += '<td><button class="btn-clear" onclick="clC('+b.n+')">Limpar</button></td>';
         h += '</tr>';
 
-        // LINHA DE DETALHES (CAIXA BRANCA)
         var displayStyle = isExpanded ? '' : 'display:none;';
         h += '<tr class="detail-row" style="'+displayStyle+'"><td colspan="9">';
         h += '<div class="detail-box">';
 
         h += '<div class="detail-col col-origem"><label>Origem</label><input id="ori_'+b.n+'" class="input-padrao" value="'+esc(b.ori)+'" onblur="svC('+b.n+')"></div>';
-
         h += '<div class="detail-col col-diag"><label>Diagnóstico / HD</label><textarea id="dg_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.dg)+'</textarea></div>';
-
         h += '<div class="detail-col col-scores"><label>Scores Clínicos</label><textarea id="sc_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.sc)+'</textarea></div>';
-
         h += '<div class="detail-col col-exames"><label>Exames Solicitados</label><textarea id="ex_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.ex)+'</textarea></div>';
-
-        // Aqui entrou Condutas/Pendências no lugar de Pendência Importante
         h += '<div class="detail-col col-pendencia"><label>Condutas / Pendências</label><textarea id="cd_'+b.n+'" onblur="svC('+b.n+')">'+esc(b.cd)+'</textarea></div>';
 
         h += '<div class="detail-col col-protocolos"><label>Protocolos</label><div class="tags-edit">';
@@ -385,10 +372,7 @@ function rnd() {
         for(var t=0; t<bEs.length; t++) { h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+esc(bEs[t])+'\')">✕</span></div>'; }
         h += '</div></div>';
 
-        h += '</div>'; 
-        h += '</td></tr>'; 
-        h += '</tbody>'; 
-
+        h += '</div></td></tr></tbody>'; 
         h += '<tbody class="spacer-body"><tr><td colspan="9" style="height:12px; padding:0; border:none; background:transparent;"></td></tr></tbody>';
     }
     tbody.innerHTML = h;
@@ -409,11 +393,9 @@ function svC(n) {
     var dgEl = g('dg_'+n); if(dgEl) b.dg = dgEl.value;
     var scEl = g('sc_'+n); if(scEl) b.sc = scEl.value; 
     var exEl = g('ex_'+n); if(exEl) b.ex = exEl.value;
-    var cdEl = g('cd_'+n); if(cdEl) b.cd = cdEl.value; // Condutas
+    var cdEl = g('cd_'+n); if(cdEl) b.cd = cdEl.value; 
 
-    saveAll(); 
-    upSum();
-    rnd();
+    saveAll(); upSum(); rnd();
 }
 
 function clC(n) {
@@ -421,6 +403,24 @@ function clC(n) {
     b.pac = ''; b.idade = ''; b.ori = ''; b.dg = ''; b.sc = ''; b.ex = ''; b.cd = '';
     b.pr = '[]'; b.es = '[]'; b.df = 'vazio'; b.lc = 'sam'; b.pd_sel = 'Nenhuma'; 
     saveAll(); rnd(); upSum();
+}
+
+function addLeito() {
+    var maxN = 0;
+    for(var i=0; i<ST.length; i++) { if(ST[i].n > maxN) maxN = ST[i].n; }
+    var nn = maxN + 1;
+    ST.push({ n: nn, pac: '', idade: '', adm: new Date().toISOString(), cv: 'proprio', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: currentAba });
+    saveAll(); rnd(); upSum();
+}
+
+function delLeito() {
+    for (var i = ST.length - 1; i >= 0; i--) {
+        var bSetor = ST[i].setor || 'emergencia';
+        if (bSetor === currentAba) {
+            ST.splice(i, 1); saveAll(); rnd(); upSum(); return;
+        }
+    }
+    alert('Não há leitos para remover neste setor.');
 }
 
 function tgPr(n, val) {
@@ -452,20 +452,13 @@ function fil(btn, f) {
     btn.classList.add('on'); rnd();
 }
 
-function addLeito() {
-    var nn = ST.length + 1;
-    ST.push({ n: nn, pac: '', idade: '', adm: new Date().toISOString(), cv: 'proprio', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma' });
-    saveAll(); rnd(); upSum();
-}
-
-function delLeito() {
-    if(ST.length <= 1) { alert('Minimo de 1 leito.'); return; }
-    ST.pop(); saveAll(); rnd(); upSum();
-}
-
 function upSum() {
-    var t=ST.length, re=0, en=0, uti=0, v=0;
+    var t=0, re=0, en=0, uti=0, v=0;
     for(var i=0; i<ST.length; i++) {
+        var bSetor = ST[i].setor || 'emergencia';
+        if(bSetor !== currentAba) continue; 
+
+        t++;
         var isVazio = (!ST[i].pac || ST[i].pac.trim() === '');
         if(isVazio) { v++; } else {
             var df = ST[i].df || 'vazio';
@@ -484,9 +477,7 @@ function tmrs() {
         var b = ST[i];
         if(!b.adm) continue;
         var hh = hD(b.adm);
-        var pbarFill = document.querySelector('#adm_'+b.n)?.parentElement.querySelector('.pbar-mini-fill');
         var permText = document.querySelector('#adm_'+b.n)?.parentElement.querySelector('.perm-text-mini');
-        if(pbarFill) { pbarFill.style.width = hh.pct + '%'; pbarFill.className = 'pbar-mini-fill ' + hh.colorClass; }
         if(permText) { permText.innerHTML = hh.txt; }
     }
 }
@@ -506,30 +497,34 @@ function upDateTime() {
     if(g('HT')) g('HT').innerHTML = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 }
 
-// ===== WHATSAPP =====
+// ===== WHATSAPP EXPORT =====
 function exportarWhatsApp() {
-    if (ST.length === 0) { alert("Não há pacientes para exportar."); return; }
+    var leitosAba = ST.filter(p => (p.setor || 'emergencia') === currentAba);
+    if (leitosAba.length === 0) { alert("Não há pacientes neste setor para exportar."); return; }
+    
     let dataAtual = new Date().toLocaleDateString('pt-BR');
     let turnoAtual = turno === 'diurno' ? '☀️ Diurno' : '🌙 Noturno';
-    let texto = `*HOSPITAL PAULO SACRAMENTO - PRONTO SOCORRO* 🏥\n*Data:* ${dataAtual}\n*Turno:* ${turnoAtual}\n*Total de Leitos:* ${ST.length}\n\n`;
+    let nomeSetor = currentAba === 'emergencia' ? 'EMERGÊNCIA' : 'OBSERVAÇÃO';
+    
+    let texto = `*HOSPITAL PAULO SACRAMENTO - ${nomeSetor}* 🏥\n*Data:* ${dataAtual}\n*Turno:* ${turnoAtual}\n\n`;
 
-    ST.forEach(p => {
+    leitosAba.forEach(p => {
         if (!p.pac || p.pac.trim() === '') return; 
         let leito = p.n || 'S/L';
         let nome = p.pac ? p.pac.toUpperCase() : 'N/I';
         let idade = p.idade ? `(${p.idade} anos)` : '';
         let diag = p.dg || 'A esclarecer';
-        let pend = p.pd || 'Nenhuma';
+        let pend = p.pd_sel !== 'Nenhuma' ? p.pd_sel : 'Nenhuma';
+        let condutas = p.cd || 'Nenhuma conduta registrada';
+        
         let destObj = df_options.find(d => d.val === p.df);
         let dest = destObj ? destObj.txt : 'A definir';
-        let stObj = st_options.find(s => s.val === p.st);
-        let status = stObj ? stObj.txt : 'Estável';
 
-        texto += `🛏️ *Leito:* ${leito} [${status}]\n👤 *Paciente:* ${nome} ${idade}\n🩺 *Diagnóstico:* ${diag}\n⏳ *Pendências:* ${pend}\n🚑 *Destino:* ${dest}\n-------------------------\n`;
+        texto += `🛏️ *Leito:* ${leito}\n👤 *Paciente:* ${nome} ${idade}\n🩺 *Diagnóstico:* ${diag}\n⚠️ *Pendência:* ${pend}\n📝 *Condutas:* ${condutas}\n🚑 *Destino:* ${dest}\n-------------------------\n`;
     });
 
     navigator.clipboard.writeText(texto).then(() => {
-        alert("✅ Resumo copiado com sucesso! Agora é só colar no WhatsApp.");
+        alert("✅ Resumo do setor copiado com sucesso! Agora é só colar no WhatsApp.");
     }).catch(err => { alert("Erro ao copiar o texto: " + err); });
 }
 
@@ -560,7 +555,7 @@ function iniciarBancoDeDados() {
             } else {
                 ST = [];
                 for(var i=1; i<=10; i++) {
-                    ST.push({ n: i, pac: '', idade: '', sexo: 'F', adm: new Date().toISOString(), cv: 'proprio', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', pd: '', df: 'vazio', st: 'estavel' });
+                    ST.push({ n: i, pac: '', idade: '', adm: new Date().toISOString(), cv: 'proprio', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'emergencia' });
                 }
                 saveAll();
             }
@@ -569,10 +564,7 @@ function iniciarBancoDeDados() {
         });
 }
 
-// Trava de segurança para salvar antes de atualizar a página
 window.addEventListener('beforeunload', function (e) { saveAll(); });
-
-// ===== INICIALIZAÇÃO =====
 setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 30000);
 upDateTime();
 </script>
