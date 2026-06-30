@@ -151,8 +151,8 @@ select.input-padrao option { background: #0f172a; color: #f8fafc; }
     <header class="main-header">
         <div class="header-inner">
             <div class="header-info">
-                <h1>Passagem de Plantão</h1>
-                <span>Pronto Socorro — Hospital</span>
+                <h1>Gestão de Pacientes</h1>
+                <span>Pronto Socorro — Hospital Paulo Sacramento</span>
             </div>
             <div class="header-meta">
                 <div class="header-date">📅 <span id="HD"></span> | ⏰ <span id="HT"></span></div>
@@ -245,12 +245,12 @@ var currentFilter = 'all';
 var turno = 'diurno';
 var currentAba = 'emergencia';
 
-var cv_options = ['PROPRIO', 'CONVENIO', 'PARTICULAR', 'SUS'];
-var lc_options = [{val:'sam', txt:'SAM - Emergencia'}, {val:'int', txt:'Internados'}];
-var pend_options = ['Nenhuma', 'Exames Laboratoriais', 'Exames de Imagem', 'Avaliação Especialista', 'Centro Cirúrgico', 'Vaga Enfermaria', 'Vaga UTI', 'Reavaliação'];
+var cv_options = ['PROPRIO', 'EXTERNO', 'PARTICULAR'];
+var lc_options = [{val:'sam', txt:'SAM - Emergencia'}, {val:'int', txt:'SIGA - Internados'}];
+var pend_options = ['Nenhuma', 'CATE', 'CIRURGIA', 'Avaliação Especialista', 'Transferência Psiquiatria', 'PSM: 30hrs', 'PSM: PQA', 'Fluxo Inverso'];
 var df_options = [{val:'vazio', txt:'Vazio'}, {val:'reavaliacao', txt:'Reavaliacao'}, {val:'enfermaria', txt:'Enfermaria'}, {val:'uti', txt:'UTI'}, {val:'alta', txt:'Alta'}];
-var prot_options = ['Sepse', 'Dor Toracica', 'AVC'];
-var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', 'Nefrologia', 'Cirurgia', 'Pediatria', 'GO'];
+var prot_options = ['Sepse', 'Dor Torácica', 'AVC'];
+var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', 'Nefrologia', 'Cirurgia', 'Pediatria', 'GO', 'Neurocirurgia', 'Cirurgia Geral', 'Urologia', 'Cirurgia Torácica', 'Hemodinâmica', 'Cirurgia Vascular', 'Infectologia'];
 
 function g(id) { return document.getElementById(id); }
 function esc(s) { return (s||'').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
