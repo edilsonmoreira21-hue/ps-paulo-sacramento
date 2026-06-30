@@ -41,13 +41,12 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .tab-btn:hover { color: #e2e8f0; }
 .tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
 
-/* ===== BOTÕES PADRONIZADOS ===== */
+/* ===== BOTÕES PADRONIZADOS E FILTROS ===== */
 .btn-padrao, .btn-action { background: transparent; border: 1px solid #334155; color: #cbd5e1; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
 .btn-padrao:hover, .btn-action:hover { background: #1e293b; color: #fff; border-color: #475569; }
 .turno-badge { background: #d97706; color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; }
 .turno-badge.noturno { background: #312e81; }
 
-/* ===== CONTADORES E FILTROS ===== */
 .dashboard-bar { background: #0f172a; padding: 12px 24px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .fb { padding: 6px 14px; font-size: 12px; font-weight: 600; border: 1px solid #334155; background: #0f172a; color: #94a3b8; border-radius: 20px; cursor: pointer; transition: 0.2s; }
@@ -56,84 +55,77 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .counters { display: flex; gap: 16px; font-size: 13px; font-weight: 600; padding: 12px 24px 0 24px; color: #cbd5e1; }
 .counter { font-size: 16px; font-weight: 800; color: #f8fafc; }
 
-/* ===== TABELA E ESTRUTURA DOS CARDS ===== */
-.table-wrap { padding: 12px 24px 24px 24px; width: 100%; }
-table { width: 100%; border-collapse: collapse; background: transparent; }
-thead th { text-align: left; padding: 10px 8px; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; border-bottom: 2px solid #334155; }
+/* ===== ESTRUTURA DE CARDS (NOVO LAYOUT) ===== */
+.bed-list-wrap { padding: 16px 24px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
+.bed-card { background: #1e293b; border-radius: 10px; padding: 16px; border-left: 6px solid #3b82f6; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); transition: 0.2s; }
+.bed-card.is-vazio { border-left-color: #334155; opacity: 0.7; }
 
-/* Espaçamento entre os cards */
-tbody.bed-group { border-bottom: 12px solid #0f172a; }
+/* Cabeçalho do Card (Identificação) */
+.bed-header { display: flex; gap: 16px; align-items: center; }
+.leito-badge { background: #020617; color: #3b82f6; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; box-shadow: 0 2px 4px rgba(0,0,0,0.5); flex-shrink: 0; }
+.header-inputs { flex: 1; display: flex; gap: 12px; }
+.header-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-/* Cores e Bordas do Card Envelopado */
-tbody.bed-group tr td { padding: 8px; vertical-align: middle; border: none; background: #1e293b; }
-tbody.bed-group tr td:first-child { border-left: 6px solid #3b82f6; }
-tbody.bed-group tr.main-row td:first-child { border-top-left-radius: 8px; }
-tbody.bed-group tr.main-row td:last-child { border-top-right-radius: 8px; }
-tbody.bed-group:not(.is-expanded) tr.main-row td:first-child { border-bottom-left-radius: 8px; }
-tbody.bed-group:not(.is-expanded) tr.main-row td:last-child { border-bottom-right-radius: 8px; }
-tbody.bed-group.is-expanded tr.detail-row td:first-child { border-bottom-left-radius: 8px; }
-tbody.bed-group.is-expanded tr.detail-row td:last-child { border-bottom-right-radius: 8px; }
+/* Corpo do Card (Detalhes) */
+.bed-body { margin-top: 16px; background: #020617; padding: 16px; border-radius: 8px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 12px; }
+.bed-row { display: flex; gap: 12px; align-items: stretch; }
+.detail-col { display: flex; flex-direction: column; gap: 6px; }
+.detail-col label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; display: flex; justify-content: space-between; }
+.perm-text-mini { color: #cbd5e1; }
 
-/* Leitos Vazios */
-tbody.bed-group.is-vazio tr td { background: #0f172a; border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b; }
-tbody.bed-group.is-vazio tr td:first-child { border-left: 6px solid #334155; }
-tbody.bed-group.is-vazio tr td:last-child { border-right: 1px solid #1e293b; }
+/* Proporções das colunas internas */
+.col-origem { flex: 0.5; } .col-diag { flex: 1.5; } .col-scores { flex: 0.8; }
+.col-exames { flex: 1.5; } .col-pendencia { flex: 1.5; }
+.col-protocolos { flex: 0.8; } .col-especialidades { flex: 1; }
 
-/* ===== ELEMENTOS INTERNOS ===== */
-.leito-badge { background: #020617; color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-
-/* Inputs Base Escuros */
+/* Inputs e Botões Internos */
 .input-padrao { height: 38px; padding: 0 10px; border: 1px solid #334155; border-radius: 6px; font-size: 13px; font-family: inherit; width: 100%; background: #0f172a; color: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; }
 .input-padrao:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
-.input-nome { font-weight: 800; text-transform: uppercase; font-size: 14px; color: #f8fafc; }
-tbody.bed-group.is-vazio .input-nome { color: #64748b; }
+.input-nome { font-weight: 800; text-transform: uppercase; font-size: 15px; color: #f8fafc; }
+.bed-card.is-vazio .input-nome { color: #64748b; }
 select.input-padrao { cursor: pointer; }
 select.input-padrao option { background: #0f172a; color: #f8fafc; }
 
-/* Tempo de Permanência */
-.td-tempo-wrapper { height: 38px; display: flex; flex-direction: column; justify-content: flex-start; padding-top: 2px; gap: 2px; }
-.input-tempo { height: 20px; padding: 0 4px; font-size: 11px; border: 1px solid #334155; border-radius: 4px; color: #94a3b8; outline: none; background: #020617; }
-.perm-text-mini { font-size: 10px; font-weight: 700; color: #cbd5e1; text-align: center; }
+.detail-col textarea { width: 100%; height: 65px; resize: none; border: 1px solid #334155; border-radius: 6px; padding: 8px; font-size: 12px; outline: none; font-family: inherit; background: #0f172a; color: #f8fafc; line-height: 1.4; }
+.detail-col textarea:focus { border-color: #3b82f6; }
 
-/* Ações e Botões Compactos na Tabela */
-.acoes-wrapper { display: flex; flex-direction: column; gap: 4px; height: 38px; }
-.btn-acao-mini { flex: 1; border: 1px solid #334155; border-radius: 4px; background: transparent; font-size: 10px; font-weight: 700; cursor: pointer; transition: .2s; width: 100%; display: flex; align-items: center; justify-content: center; }
+.btn-acao-mini { padding: 0 16px; height: 38px; border: 1px solid #334155; border-radius: 6px; background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; transition: .2s; }
 .btn-acao-mini.limpar { color: #94a3b8; }
 .btn-acao-mini.limpar:hover { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
 .btn-acao-mini.transf { color: #3b82f6; border-color: #1e3a8a; }
 .btn-acao-mini.transf:hover { background: #1e3a8a; color: #bfdbfe; border-color: #3b82f6; }
 
-/* ===== CAIXA DE DETALHES (FLEXBOX APLICADO) ===== */
-.detail-row td { padding: 0 12px 12px 12px !important; }
-.detail-box { background: #020617; border-radius: 8px; padding: 16px; border: 1px solid #334155; display: flex; gap: 12px; align-items: stretch; width: 100%; }
-.detail-col { display: flex; flex-direction: column; gap: 6px; }
-.detail-col label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
-
-.col-origem { flex: 0.5; }
-.col-diag { flex: 1.5; }
-.col-scores { flex: 0.8; }
-.col-exames { flex: 1.5; }
-.col-pendencia { flex: 1.5; }
-.col-protocolos { flex: 0.8; }
-.col-especialidades { flex: 1; }
-
-.detail-col textarea { width: 100%; height: 65px; resize: none; border: 1px solid #334155; border-radius: 6px; padding: 8px; font-size: 12px; outline: none; font-family: inherit; background: #0f172a; color: #f8fafc; line-height: 1.4; }
-.detail-col textarea:focus { border-color: #3b82f6; }
-
 /* Tags */
 .tags-edit { display: flex; flex-wrap: wrap; gap: 4px; }
-.tag-edit { padding: 2px 8px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; font-size: 10px; font-weight: 700; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+.tag-edit { padding: 4px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #94a3b8; transition: 0.2s; }
 .tag-edit.on { background: #1e3a8a; color: #bfdbfe; border-color: #3b82f6; }
-
 .input-group-add { display: flex; gap: 4px; }
-.input-group-add select { flex: 1; height: 28px; border: 1px solid #334155; border-radius: 4px; font-size: 11px; outline: none; background: #0f172a; color: #f8fafc; }
-.btn-add-tag { width: 28px; height: 28px; background: #3b82f6; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.input-group-add select { flex: 1; height: 30px; border: 1px solid #334155; border-radius: 4px; font-size: 11px; outline: none; background: #0f172a; color: #f8fafc; }
+.btn-add-tag { width: 30px; height: 30px; background: #3b82f6; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 .btn-add-tag:hover { background: #2563eb; }
-
-.tags-selected { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-.tag-selected { padding: 2px 6px; background: #1e3a8a; color: #bfdbfe; border-radius: 10px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 4px; border: 1px solid #3b82f6; }
+.tags-selected { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.tag-selected { padding: 4px 8px; background: #1e3a8a; color: #bfdbfe; border-radius: 12px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: 1px solid #3b82f6; }
 .tag-remove { cursor: pointer; color: #fca5a5; font-weight: bold; font-size: 10px; }
 .tag-remove:hover { color: #ef4444; }
+
+/* ===== ESTILOS PARA IMPRESSÃO (PLANILHA) ===== */
+@media screen { #print-area { display: none; } }
+@media print {
+    @page { margin: 10mm; size: landscape; }
+    body { background: #fff !important; color: #000 !important; font-size: 11px; }
+    #login-screen, #app-content { display: none !important; }
+    #print-area { display: block !important; width: 100%; }
+    
+    .print-header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+    .print-header h2 { margin: 0 0 5px 0; font-size: 18px; text-transform: uppercase; }
+    .print-header p { margin: 0; font-size: 12px; }
+    
+    .print-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    .print-table th, .print-table td { border: 1px solid #000; padding: 6px; text-align: left; vertical-align: top; page-break-inside: avoid; }
+    .print-table th { background: #f1f5f9 !important; font-weight: bold; text-transform: uppercase; font-size: 10px; -webkit-print-color-adjust: exact; }
+    
+    .print-footer { font-size: 9px; text-align: center; color: #333; border-top: 1px solid #ccc; padding-top: 5px; margin-top: 20px; }
+}
 </style>
 </head>
 <body>
@@ -184,7 +176,7 @@ select.input-padrao option { background: #0f172a; color: #f8fafc; }
             <button class="fb" onclick="fil(this, 'vazio')">Vazio</button>
             <button class="btn-action btn-add" onclick="addLeito()">+ Adicionar Leito</button>
             <button class="btn-action btn-rm" onclick="delLeito()">Remover Ultimo</button>
-            <button class="btn-action btn-print" onclick="window.print()">Imprimir</button>
+            <button class="btn-action btn-print" onclick="prepararImpressao()">Imprimir</button>
             <button class="btn-action btn-wpp" onclick="exportarWhatsApp()">Exportar Plantão</button>
         </div>
     </div>
@@ -197,26 +189,10 @@ select.input-padrao option { background: #0f172a; color: #f8fafc; }
         <div><span class="counter" id="cV">0</span> Vazios</div>
     </div>
 
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:4%; text-align:center;">Leito</th>
-                    <th style="width:22%;">Paciente</th>
-                    <th style="width:5%;">Idade</th>
-                    <th style="width:9%;">Convênio</th>
-                    <th style="width:11%;">Sistema</th>
-                    <th style="width:11%;">Entrada</th>
-                    <th style="width:16%;">Pendência Importante</th>
-                    <th style="width:10%;">Destino</th>
-                    <th style="width:12%; text-align:center;">Ações</th>
-                </tr>
-            </thead>
-            <tbody id="tb"></tbody>
-        </table>
-    </div>
+    <div class="bed-list-wrap" id="tb"></div>
 </div>
 
+<div id="print-area"></div>
 <script>
 // ===== CONFIGURAÇÃO DO FIREBASE =====
 var firebaseConfig = {
@@ -232,7 +208,7 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 var auth = firebase.auth();
 var db = firebase.firestore();
 
-// ===== AUTENTICAÇÃO E LOGIN =====
+// ===== AUTENTICAÇÃO =====
 function fazerLogin() {
     var e = document.getElementById('email').value;
     var s = document.getElementById('senha').value;
@@ -244,13 +220,11 @@ function fazerLogin() {
         else { alert('Erro no login: ' + error.message); }
     });
 }
-
 function fazerLogout() { auth.signOut(); }
 
 auth.onAuthStateChanged(function(user) {
     var loginScreen = document.getElementById('login-screen');
     var appContent = document.getElementById('app-content');
-
     if (user) {
         if(loginScreen) loginScreen.style.display = 'none';
         if(appContent) appContent.style.display = 'block';
@@ -278,12 +252,10 @@ var esp_options = ['Telecardio', 'Teleneuro', 'Telepsiquiatria', 'Telehemato', '
 function g(id) { return document.getElementById(id); }
 function esc(s) { return (s||'').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
-// Busca garantindo Setor e Numero para evitar conflito de leitos entre abas
 function gb(n, setor) { 
     for(var i=0; i<ST.length; i++) { 
         if(ST[i].n === n && (ST[i].setor || 'emergencia') === setor) return ST[i]; 
-    } 
-    return null; 
+    } return null; 
 }
 
 function hD(iso) {
@@ -307,9 +279,9 @@ function mudarAba(aba) {
     rnd(); upSum();
 }
 
-// ===== RENDERIZAÇÃO PRINCIPAL (RND) =====
+// ===== RENDERIZAÇÃO PRINCIPAL (CARDS CSS) =====
 function rnd() {
-    var tbody = g('tb'); if(!tbody) return;
+    var wrapper = g('tb'); if(!wrapper) return;
     var h = '';
     for(var i=0; i<ST.length; i++) {
         var b = ST[i];
@@ -324,52 +296,60 @@ function rnd() {
         var isVazio = (!b.pac || b.pac.trim() === '');
         var statusClass = isVazio ? 'is-vazio' : 'is-estavel'; 
         var isExpanded = !isVazio; 
-        var expClass = isExpanded ? ' is-expanded' : '';
-
-        // O ID de cada elemento formulário agora leva o setor como prefixo
         var pfx = bSetor + '_' + b.n;
 
-        h += '<tbody class="bed-group ' + statusClass + expClass + '">';
-        h += '<tr class="main-row">';
-        h += '<td style="text-align:center;"><div class="leito-badge">' + b.n + '</div></td>';
-        h += '<td><input id="pac_'+pfx+'" class="input-padrao input-nome" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+',\''+bSetor+'\')"></td>';
-        h += '<td><input id="idade_'+pfx+'" type="number" class="input-padrao" value="'+esc(b.idade)+'" placeholder="Anos" onblur="svC('+b.n+',\''+bSetor+'\')"></td>';
-        
-        h += '<td><select id="cv_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
-        for(var c=0; c<cv_options.length; c++) h += '<option value="'+cv_options[c]+'" '+(b.cv===cv_options[c]?'selected':'')+'>'+cv_options[c]+'</option>';
-        h += '</select></td>';
+        // Card Container
+        h += '<div class="bed-card ' + statusClass + '">';
 
-        h += '<td><select id="lc_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
-        for(var l=0; l<lc_options.length; l++) h += '<option value="'+lc_options[l].val+'" '+(b.lc===lc_options[l].val?'selected':'')+'>'+lc_options[l].txt+'</option>';
-        h += '</select></td>';
-
-        h += '<td><div class="td-tempo-wrapper"><input id="adm_'+pfx+'" type="datetime-local" class="input-tempo" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+',\''+bSetor+'\')"><div class="tempo-texto perm-text-mini"></div></div></td>';
-
-        h += '<td><select id="pd_sel_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
-        for(var p=0; p<pend_options.length; p++) h += '<option value="'+pend_options[p]+'" '+(b.pd_sel===pend_options[p]?'selected':'')+'>'+pend_options[p]+'</option>';
-        h += '</select></td>';
-
-        h += '<td><select id="df_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
-        for(var d=0; d<df_options.length; d++) h += '<option value="'+df_options[d].val+'" '+(b.df===df_options[d].val?'selected':'')+'>'+df_options[d].txt+'</option>';
-        h += '</select></td>';
-
-        // Botões de Ação na Coluna
-        h += '<td><div class="acoes-wrapper">';
-        h += '<button class="btn-acao-mini transf" onclick="transferir('+b.n+',\''+bSetor+'\')" title="Transferir Setor">Transf.</button>';
+        // Card Header (Identificação Integrada)
+        h += '<div class="bed-header">';
+        h += '<div class="leito-badge">' + b.n + '</div>';
+        h += '<div class="header-inputs">';
+        h += '<input id="pac_'+pfx+'" class="input-padrao input-nome" style="flex:2.5;" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<input id="idade_'+pfx+'" type="number" class="input-padrao" style="flex:0.5; min-width:80px;" value="'+esc(b.idade)+'" placeholder="Idade" onblur="svC('+b.n+',\''+bSetor+'\')">';
+        h += '</div>';
+        h += '<div class="header-actions">';
+        h += '<button class="btn-acao-mini transf" onclick="transferir('+b.n+',\''+bSetor+'\')" title="Transferir Setor">Transferir</button>';
         h += '<button class="btn-acao-mini limpar" onclick="clC('+b.n+',\''+bSetor+'\')">Limpar</button>';
-        h += '</div></td>';
-        h += '</tr>';
+        h += '</div>';
+        h += '</div>'; // Fecha bed-header
 
-        var displayStyle = isExpanded ? '' : 'display:none;';
-        h += '<tr class="detail-row" style="'+displayStyle+'"><td colspan="9">';
-        h += '<div class="detail-box">';
+        // Card Body (Somente se não for vazio)
+        var displayStyle = isExpanded ? 'display:flex;' : 'display:none;';
+        h += '<div class="bed-body" style="'+displayStyle+'">';
 
+        // Linha 1 (Parâmetros)
+        h += '<div class="bed-row">';
+        h += '<div class="detail-col" style="flex:1;"><label>Convênio</label><select id="cv_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
+        for(var c=0; c<cv_options.length; c++) h += '<option value="'+cv_options[c]+'" '+(b.cv===cv_options[c]?'selected':'')+'>'+cv_options[c]+'</option>';
+        h += '</select></div>';
+
+        h += '<div class="detail-col" style="flex:1.2;"><label>Sistema</label><select id="lc_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
+        for(var l=0; l<lc_options.length; l++) h += '<option value="'+lc_options[l].val+'" '+(b.lc===lc_options[l].val?'selected':'')+'>'+lc_options[l].txt+'</option>';
+        h += '</select></div>';
+
+        h += '<div class="detail-col" style="flex:1.2;"><label>Entrada <span class="perm-text-mini"></span></label><input id="adm_'+pfx+'" type="datetime-local" class="input-padrao" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+',\''+bSetor+'\')"></div>';
+
+        h += '<div class="detail-col" style="flex:1.5;"><label>Pendência Importante</label><select id="pd_sel_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
+        for(var p=0; p<pend_options.length; p++) h += '<option value="'+pend_options[p]+'" '+(b.pd_sel===pend_options[p]?'selected':'')+'>'+pend_options[p]+'</option>';
+        h += '</select></div>';
+
+        h += '<div class="detail-col" style="flex:1;"><label>Destino</label><select id="df_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
+        for(var d=0; d<df_options.length; d++) h += '<option value="'+df_options[d].val+'" '+(b.df===df_options[d].val?'selected':'')+'>'+df_options[d].txt+'</option>';
+        h += '</select></div>';
+        h += '</div>'; // Fecha Linha 1
+
+        // Linha 2 (Textos Livres)
+        h += '<div class="bed-row">';
         h += '<div class="detail-col col-origem"><label>Origem</label><input id="ori_'+pfx+'" class="input-padrao" value="'+esc(b.ori)+'" onblur="svC('+b.n+',\''+bSetor+'\')"></div>';
         h += '<div class="detail-col col-diag"><label>Diagnóstico / HD</label><textarea id="dg_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.dg)+'</textarea></div>';
         h += '<div class="detail-col col-scores"><label>Scores Clínicos</label><textarea id="sc_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.sc)+'</textarea></div>';
         h += '<div class="detail-col col-exames"><label>Exames Solicitados</label><textarea id="ex_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.ex)+'</textarea></div>';
         h += '<div class="detail-col col-pendencia"><label>Condutas / Pendências</label><textarea id="cd_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.cd)+'</textarea></div>';
+        h += '</div>'; // Fecha Linha 2
 
+        // Linha 3 (Tags)
+        h += '<div class="bed-row">';
         h += '<div class="detail-col col-protocolos"><label>Protocolos</label><div class="tags-edit">';
         var bPr = typeof b.pr === 'string' ? JSON.parse(b.pr || '[]') : (b.pr || []);
         for(var pr=0; pr<prot_options.length; pr++) {
@@ -378,22 +358,23 @@ function rnd() {
         h += '</div></div>';
 
         h += '<div class="detail-col col-especialidades"><label>Especialidades</label><div class="input-group-add">';
-        h += '<select class="input-padrao" style="height:32px; padding: 0 6px; font-size: 12px;" id="sel_es_'+pfx+'"><option value="">Selecione...</option>';
+        h += '<select class="input-padrao" id="sel_es_'+pfx+'"><option value="">Selecione...</option>';
         for(var e=0; e<esp_options.length; e++) { h += '<option value="'+esp_options[e]+'">'+esp_options[e]+'</option>'; }
         h += '</select><button class="btn-add-tag" onclick="addEs('+b.n+',\''+bSetor+'\')">+</button></div>';
         h += '<div class="tags-selected">';
         var bEs = []; try { bEs = JSON.parse(b.es || '[]'); } catch(err) { if(b.es && b.es !== '') bEs = [b.es]; }
         for(var t=0; t<bEs.length; t++) { h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+bSetor+'\',\''+esc(bEs[t])+'\')">✕</span></div>'; }
         h += '</div></div>';
+        h += '</div>'; // Fecha Linha 3
 
-        h += '</div></td></tr></tbody>'; 
-        h += '<tbody class="spacer-body"><tr><td colspan="9" style="height:12px; padding:0; border:none; background:transparent;"></td></tr></tbody>';
+        h += '</div>'; // Fecha bed-body
+        h += '</div>'; // Fecha bed-card
     }
-    tbody.innerHTML = h;
+    wrapper.innerHTML = h;
     tmrs();
 }
 
-// ===== INTERAÇÃO, SALVAMENTO E TRANSFERÊNCIA =====
+// ===== INTERAÇÕES, TRANSFERÊNCIA E SALVAMENTO =====
 function svC(n, setor) {
     var b = gb(n, setor); if(!b) return;
     var pfx = setor + '_' + n;
@@ -422,9 +403,7 @@ function clC(n, setor) {
 
 function transferir(n, setorOrigem) {
     var bOrigem = gb(n, setorOrigem);
-    if(!bOrigem || !bOrigem.pac || bOrigem.pac.trim() === '') {
-        alert('Leito vazio. Não há paciente para transferir.'); return;
-    }
+    if(!bOrigem || !bOrigem.pac || bOrigem.pac.trim() === '') { alert('Leito vazio. Não há paciente para transferir.'); return; }
 
     var setorDestino = (setorOrigem === 'emergencia') ? 'observacao' : 'emergencia';
     var nomeDestino = (setorDestino === 'emergencia') ? 'Emergência' : 'Observação';
@@ -433,11 +412,8 @@ function transferir(n, setorOrigem) {
 
     var bDestino = null;
     var leitosDestino = ST.filter(b => (b.setor || 'emergencia') === setorDestino).sort((a,b) => a.n - b.n);
-    
     for(var i=0; i<leitosDestino.length; i++) {
-        if(!leitosDestino[i].pac || leitosDestino[i].pac.trim() === '') {
-            bDestino = leitosDestino[i]; break;
-        }
+        if(!leitosDestino[i].pac || leitosDestino[i].pac.trim() === '') { bDestino = leitosDestino[i]; break; }
     }
 
     if(!bDestino) {
@@ -456,24 +432,19 @@ function transferir(n, setorOrigem) {
     bOrigem.pac = ''; bOrigem.idade = ''; bOrigem.ori = ''; bOrigem.dg = ''; bOrigem.sc = ''; bOrigem.ex = ''; bOrigem.cd = '';
     bOrigem.pr = '[]'; bOrigem.es = '[]'; bOrigem.df = 'vazio'; bOrigem.lc = 'sam'; bOrigem.pd_sel = 'Nenhuma';
 
-    saveAll(); 
-    mudarAba(setorDestino);
+    saveAll(); mudarAba(setorDestino);
 }
 
 function addLeito() {
     var maxN = 0;
-    for(var i=0; i<ST.length; i++) { 
-        if((ST[i].setor || 'emergencia') === currentAba && ST[i].n > maxN) maxN = ST[i].n; 
-    }
+    for(var i=0; i<ST.length; i++) { if((ST[i].setor || 'emergencia') === currentAba && ST[i].n > maxN) maxN = ST[i].n; }
     ST.push({ n: maxN + 1, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: currentAba });
     saveAll(); rnd(); upSum();
 }
 
 function delLeito() {
     for (var i = ST.length - 1; i >= 0; i--) {
-        if ((ST[i].setor || 'emergencia') === currentAba) {
-            ST.splice(i, 1); saveAll(); rnd(); upSum(); return;
-        }
+        if ((ST[i].setor || 'emergencia') === currentAba) { ST.splice(i, 1); saveAll(); rnd(); upSum(); return; }
     }
     alert('Não há leitos para remover neste setor.');
 }
@@ -512,7 +483,6 @@ function upSum() {
     for(var i=0; i<ST.length; i++) {
         var bSetor = ST[i].setor || 'emergencia';
         if(bSetor !== currentAba) continue; 
-
         t++;
         var isVazio = (!ST[i].pac || ST[i].pac.trim() === '');
         if(isVazio) { v++; } else {
@@ -533,8 +503,11 @@ function tmrs() {
         if(!b.adm) continue;
         var hh = hD(b.adm);
         var pfx = (b.setor || 'emergencia') + '_' + b.n;
-        var permText = document.querySelector('#adm_'+pfx)?.parentElement.querySelector('.perm-text-mini');
-        if(permText) { permText.innerHTML = hh.txt; }
+        var admEl = document.getElementById('adm_'+pfx);
+        if(admEl && admEl.parentElement) {
+            var permText = admEl.parentElement.querySelector('.perm-text-mini');
+            if(permText) permText.innerHTML = hh.txt;
+        }
     }
 }
 
@@ -553,7 +526,7 @@ function upDateTime() {
     if(g('HT')) g('HT').innerHTML = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 }
 
-// ===== WHATSAPP EXPORT =====
+// ===== EXPORTAR WHATSAPP E IMPRESSÃO =====
 function exportarWhatsApp() {
     var leitosAba = ST.filter(p => (p.setor || 'emergencia') === currentAba).sort((a,b) => a.n - b.n);
     if (leitosAba.length === 0) { alert("Não há pacientes neste setor para exportar."); return; }
@@ -561,7 +534,6 @@ function exportarWhatsApp() {
     let dataAtual = new Date().toLocaleDateString('pt-BR');
     let turnoAtual = turno === 'diurno' ? '☀️ Diurno' : '🌙 Noturno';
     let nomeSetor = currentAba === 'emergencia' ? 'EMERGÊNCIA' : 'OBSERVAÇÃO';
-    
     let texto = `*HOSPITAL PAULO SACRAMENTO - ${nomeSetor}* 🏥\n*Data:* ${dataAtual}\n*Turno:* ${turnoAtual}\n\n`;
 
     leitosAba.forEach(p => {
@@ -579,45 +551,75 @@ function exportarWhatsApp() {
         texto += `🛏️ *Leito:* ${leito}\n👤 *Paciente:* ${nome} ${idade}\n🩺 *Diagnóstico:* ${diag}\n⚠️ *Pendência:* ${pend}\n📝 *Condutas:* ${condutas}\n🚑 *Destino:* ${dest}\n-------------------------\n`;
     });
 
-    navigator.clipboard.writeText(texto).then(() => {
-        alert("✅ Resumo do setor copiado com sucesso! Agora é só colar no WhatsApp.");
-    }).catch(err => { alert("Erro ao copiar o texto: " + err); });
+    navigator.clipboard.writeText(texto).then(() => { alert("✅ Resumo do setor copiado com sucesso!"); })
+    .catch(err => { alert("Erro ao copiar o texto: " + err); });
 }
 
-// ===== BANCO DE DADOS (FIREBASE) =====
+function prepararImpressao() {
+    var leitosAba = ST.filter(p => (p.setor || 'emergencia') === currentAba && p.pac && p.pac.trim() !== '').sort((a,b) => a.n - b.n);
+    if (leitosAba.length === 0) { alert("Não há pacientes ocupando leitos neste setor para imprimir."); return; }
+
+    var nomeSetor = currentAba === 'emergencia' ? 'EMERGÊNCIA' : 'OBSERVAÇÃO';
+    var dataAtual = new Date().toLocaleDateString('pt-BR');
+    var turnoAtual = turno === 'diurno' ? 'Diurno' : 'Noturno';
+
+    var h = '<div class="print-header">';
+    h += '<h2>HOSPITAL PAULO SACRAMENTO - ' + nomeSetor + '</h2>';
+    h += '<p><strong>Data:</strong> ' + dataAtual + ' &nbsp;&nbsp;&nbsp; <strong>Turno:</strong> ' + turnoAtual + '</p></div>';
+    h += '<table class="print-table"><thead><tr>';
+    h += '<th style="width:4%; text-align:center;">Lto</th><th style="width:20%;">Paciente</th><th style="width:8%;">Tempo</th>';
+    h += '<th style="width:20%;">Diagnóstico / HD</th><th style="width:20%;">Condutas / Pendências</th><th style="width:14%;">Pend. Importante</th><th style="width:14%;">Destino</th>';
+    h += '</tr></thead><tbody>';
+
+    leitosAba.forEach(p => {
+        var idadeTxt = p.idade ? ' (' + p.idade + 'a)' : '';
+        var tempo = hD(p.adm).txt.replace(' de permanência', '');
+        var diag = (p.dg || '').replace(/\n/g, '<br>');
+        var cond = (p.cd || '').replace(/\n/g, '<br>');
+        var pend = p.pd_sel !== 'Nenhuma' ? p.pd_sel : '-';
+        var destObj = df_options.find(d => d.val === p.df);
+        var dest = destObj ? destObj.txt : 'A Definir';
+
+        h += '<tr><td style="text-align:center;"><b>' + p.n + '</b></td>';
+        h += '<td><b>' + (p.pac.toUpperCase()) + '</b><br><span style="font-size:10px;">' + p.cv + idadeTxt + '</span></td>';
+        h += '<td>' + tempo + '</td><td>' + esc(diag) + '</td><td>' + esc(cond) + '</td><td>' + pend + '</td><td>' + dest + '</td></tr>';
+    });
+
+    h += '</tbody></table>';
+    h += '<div class="print-footer"><strong>Aviso de Confidencialidade:</strong> Este documento contém informações sensíveis de pacientes amparadas pelo sigilo médico e LGPD. Descarte de forma segura após o uso assistencial.</div>';
+    document.getElementById('print-area').innerHTML = h;
+    window.print();
+}
+
+// ===== INICIAÇÃO DO FIREBASE E BANCO DE DADOS =====
 function saveAll() {
     if (!auth.currentUser) return;
     db.collection('ps_data').doc('estado_atual').set({
-        leitos: JSON.stringify(ST),
-        turno: turno,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        leitos: JSON.stringify(ST), turno: turno, timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).catch(function(error) { console.error("Erro ao salvar: ", error); });
 }
 
 var unsubscribeDB = null;
 function iniciarBancoDeDados() {
     if (!auth.currentUser) return;
-    unsubscribeDB = db.collection('ps_data').doc('estado_atual')
-        .onSnapshot(function(doc) {
-            if (doc.exists) {
-                var data = doc.data();
-                if (data.leitos) { try { ST = JSON.parse(data.leitos); } catch(e) { console.error("Erro", e); } }
-                if (data.turno) { turno = data.turno; upTurno(); }
-                rnd(); upSum();
-            } else {
-                ST = [];
-                for(var i=1; i<=10; i++) ST.push({ n: i, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'emergencia' });
-                for(var i=1; i<=5; i++) ST.push({ n: i, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'observacao' });
-                saveAll();
-            }
-        }, function(error) { console.error("Erro no banco: ", error); });
+    unsubscribeDB = db.collection('ps_data').doc('estado_atual').onSnapshot(function(doc) {
+        if (doc.exists) {
+            var data = doc.data();
+            if (data.leitos) { try { ST = JSON.parse(data.leitos); } catch(e) { console.error("Erro", e); } }
+            if (data.turno) { turno = data.turno; upTurno(); }
+            rnd(); upSum();
+        } else {
+            ST = [];
+            for(var i=1; i<=10; i++) ST.push({ n: i, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'emergencia' });
+            for(var j=1; j<=5; j++) ST.push({ n: j, pac: '', idade: '', adm: new Date().toISOString(), cv: 'PROPRIO', lc: 'sam', ori: '', dg: '', sc: '', pr: '[]', ex: '', es: '[]', cd: '', df: 'vazio', pd_sel: 'Nenhuma', setor: 'observacao' });
+            saveAll();
+        }
+    }, function(error) { console.error("Erro no banco: ", error); });
 }
 
 window.addEventListener('beforeunload', function (e) { saveAll(); });
 setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 30000);
 upDateTime();
 </script>
-</body>
-</html>
 </body>
 </html>
