@@ -55,30 +55,25 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .counters { display: flex; gap: 16px; font-size: 13px; font-weight: 600; padding: 12px 24px 0 24px; color: #cbd5e1; }
 .counter { font-size: 16px; font-weight: 800; color: #f8fafc; }
 
-/* ===== ESTRUTURA DE CARDS (NOVO LAYOUT) ===== */
+/* ===== ESTRUTURA DE CARDS (NOVO LAYOUT HORIZONTAL) ===== */
 .bed-list-wrap { padding: 16px 24px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
 .bed-card { background: #1e293b; border-radius: 10px; padding: 16px; border-left: 6px solid #3b82f6; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); transition: 0.2s; }
 .bed-card.is-vazio { border-left-color: #334155; opacity: 0.7; }
 
-/* Cabeçalho do Card (Identificação) */
+/* Cabeçalho do Card (Identificação Integrada) */
 .bed-header { display: flex; gap: 16px; align-items: center; }
 .leito-badge { background: #020617; color: #3b82f6; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; box-shadow: 0 2px 4px rgba(0,0,0,0.5); flex-shrink: 0; }
 .header-inputs { flex: 1; display: flex; gap: 12px; }
 .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-/* Corpo do Card (Detalhes) */
-.bed-body { margin-top: 16px; background: #020617; padding: 16px; border-radius: 8px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 12px; }
+/* Corpo do Card (Detalhes Metódicos) */
+.bed-body { margin-top: 16px; background: #020617; padding: 16px; border-radius: 8px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 16px; }
 .bed-row { display: flex; gap: 12px; align-items: stretch; }
 .detail-col { display: flex; flex-direction: column; gap: 6px; }
-.detail-col label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; display: flex; justify-content: space-between; }
-.perm-text-mini { color: #cbd5e1; }
+.detail-col label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; display: flex; justify-content: space-between; align-items: flex-end;}
+.perm-text-mini { color: #cbd5e1; font-weight: 800; }
 
-/* Proporções das colunas internas */
-.col-origem { flex: 0.5; } .col-diag { flex: 1.5; } .col-scores { flex: 0.8; }
-.col-exames { flex: 1.5; } .col-pendencia { flex: 1.5; }
-.col-protocolos { flex: 0.8; } .col-especialidades { flex: 1; }
-
-/* Inputs e Botões Internos */
+/* Inputs Base Escuros */
 .input-padrao { height: 38px; padding: 0 10px; border: 1px solid #334155; border-radius: 6px; font-size: 13px; font-family: inherit; width: 100%; background: #0f172a; color: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; }
 .input-padrao:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
 .input-nome { font-weight: 800; text-transform: uppercase; font-size: 15px; color: #f8fafc; }
@@ -86,26 +81,35 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 select.input-padrao { cursor: pointer; }
 select.input-padrao option { background: #0f172a; color: #f8fafc; }
 
+/* Áreas de Texto */
 .detail-col textarea { width: 100%; height: 65px; resize: none; border: 1px solid #334155; border-radius: 6px; padding: 8px; font-size: 12px; outline: none; font-family: inherit; background: #0f172a; color: #f8fafc; line-height: 1.4; }
 .detail-col textarea:focus { border-color: #3b82f6; }
 
+/* Botões da Tabela */
 .btn-acao-mini { padding: 0 16px; height: 38px; border: 1px solid #334155; border-radius: 6px; background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; transition: .2s; }
 .btn-acao-mini.limpar { color: #94a3b8; }
 .btn-acao-mini.limpar:hover { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
 .btn-acao-mini.transf { color: #3b82f6; border-color: #1e3a8a; }
 .btn-acao-mini.transf:hover { background: #1e3a8a; color: #bfdbfe; border-color: #3b82f6; }
 
-/* Tags */
-.tags-edit { display: flex; flex-wrap: wrap; gap: 4px; }
-.tag-edit { padding: 4px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #94a3b8; transition: 0.2s; }
-.tag-edit.on { background: #1e3a8a; color: #bfdbfe; border-color: #3b82f6; }
+/* Progress Bar de Tempo de Permanência */
+.prog-wrap { width: 100%; height: 4px; background: #1e293b; border-radius: 2px; margin-top: 2px; overflow: hidden; }
+.prog-fill { height: 100%; width: 0%; background: #3b82f6; transition: width 0.3s ease, background-color 0.3s ease; }
+
+/* Botões de Protocolo Inline */
+.protocol-group { display: flex; gap: 6px; height: 38px; }
+.prot-btn { flex: 1; border: 1px solid #334155; border-radius: 6px; background: #0f172a; color: #94a3b8; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+.prot-btn:hover { border-color: #475569; color: #cbd5e1; }
+.prot-btn.on { background: #1e3a8a; border-color: #3b82f6; color: #bfdbfe; }
+
+/* Tags de Especialidades */
 .input-group-add { display: flex; gap: 4px; }
-.input-group-add select { flex: 1; height: 30px; border: 1px solid #334155; border-radius: 4px; font-size: 11px; outline: none; background: #0f172a; color: #f8fafc; }
-.btn-add-tag { width: 30px; height: 30px; background: #3b82f6; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.input-group-add select { flex: 1; height: 38px; border: 1px solid #334155; border-radius: 6px; font-size: 12px; outline: none; background: #0f172a; color: #f8fafc; }
+.btn-add-tag { width: 38px; height: 38px; background: #3b82f6; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;}
 .btn-add-tag:hover { background: #2563eb; }
-.tags-selected { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.tag-selected { padding: 4px 8px; background: #1e3a8a; color: #bfdbfe; border-radius: 12px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: 1px solid #3b82f6; }
-.tag-remove { cursor: pointer; color: #fca5a5; font-weight: bold; font-size: 10px; }
+.tags-selected { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.tag-selected { padding: 4px 10px; background: #1e3a8a; color: #bfdbfe; border-radius: 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: 1px solid #3b82f6; }
+.tag-remove { cursor: pointer; color: #fca5a5; font-weight: bold; font-size: 12px; }
 .tag-remove:hover { color: #ef4444; }
 
 /* ===== ESTILOS PARA IMPRESSÃO (PLANILHA) ===== */
@@ -129,7 +133,6 @@ select.input-padrao option { background: #0f172a; color: #f8fafc; }
 </style>
 </head>
 <body>
-
 <div id="login-screen">
     <div class="login-box">
         <h2>Pronto Socorro</h2>
@@ -301,12 +304,13 @@ function rnd() {
         // Card Container
         h += '<div class="bed-card ' + statusClass + '">';
 
-        // Card Header (Identificação Integrada)
+        // Card Header (Identificação, Origem, Idade e Ações)
         h += '<div class="bed-header">';
         h += '<div class="leito-badge">' + b.n + '</div>';
         h += '<div class="header-inputs">';
         h += '<input id="pac_'+pfx+'" class="input-padrao input-nome" style="flex:2.5;" value="'+esc(b.pac)+'" placeholder="NOME DO PACIENTE" onblur="svC('+b.n+',\''+bSetor+'\')">';
-        h += '<input id="idade_'+pfx+'" type="number" class="input-padrao" style="flex:0.5; min-width:80px;" value="'+esc(b.idade)+'" placeholder="Idade" onblur="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<input id="ori_'+pfx+'" class="input-padrao" style="flex:1;" value="'+esc(b.ori)+'" placeholder="Origem" onblur="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<input id="idade_'+pfx+'" type="number" class="input-padrao" style="flex:0.4; min-width:80px;" value="'+esc(b.idade)+'" placeholder="Idade" onblur="svC('+b.n+',\''+bSetor+'\')">';
         h += '</div>';
         h += '<div class="header-actions">';
         h += '<button class="btn-acao-mini transf" onclick="transferir('+b.n+',\''+bSetor+'\')" title="Transferir Setor">Transferir</button>';
@@ -314,13 +318,13 @@ function rnd() {
         h += '</div>';
         h += '</div>'; // Fecha bed-header
 
-        // Card Body (Somente se não for vazio)
+        // Card Body
         var displayStyle = isExpanded ? 'display:flex;' : 'display:none;';
         h += '<div class="bed-body" style="'+displayStyle+'">';
 
-        // Linha 1 (Parâmetros)
+        // Linha 1 (Parâmetros Clínicos, Barra de Tempo e Protocolos)
         h += '<div class="bed-row">';
-        h += '<div class="detail-col" style="flex:1;"><label>Convênio</label><select id="cv_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<div class="detail-col" style="flex:0.8;"><label>Convênio</label><select id="cv_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var c=0; c<cv_options.length; c++) h += '<option value="'+cv_options[c]+'" '+(b.cv===cv_options[c]?'selected':'')+'>'+cv_options[c]+'</option>';
         h += '</select></div>';
 
@@ -328,36 +332,35 @@ function rnd() {
         for(var l=0; l<lc_options.length; l++) h += '<option value="'+lc_options[l].val+'" '+(b.lc===lc_options[l].val?'selected':'')+'>'+lc_options[l].txt+'</option>';
         h += '</select></div>';
 
-        h += '<div class="detail-col" style="flex:1.2;"><label>Entrada <span class="perm-text-mini"></span></label><input id="adm_'+pfx+'" type="datetime-local" class="input-padrao" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+',\''+bSetor+'\')"></div>';
+        h += '<div class="detail-col" style="flex:1.2;"><label>Entrada <span class="perm-text-mini"></span></label>';
+        h += '<input id="adm_'+pfx+'" type="datetime-local" class="input-padrao" style="margin-bottom:2px;" value="'+(b.adm?b.adm.substring(0,16):'')+'" onblur="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<div class="prog-wrap"><div class="prog-fill" id="prog_'+pfx+'"></div></div>';
+        h += '</div>';
 
-        h += '<div class="detail-col" style="flex:1.5;"><label>Pendência Importante</label><select id="pd_sel_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<div class="detail-col" style="flex:1.2;"><label>Pendência Importante</label><select id="pd_sel_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var p=0; p<pend_options.length; p++) h += '<option value="'+pend_options[p]+'" '+(b.pd_sel===pend_options[p]?'selected':'')+'>'+pend_options[p]+'</option>';
         h += '</select></div>';
 
-        h += '<div class="detail-col" style="flex:1;"><label>Destino</label><select id="df_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
+        h += '<div class="detail-col" style="flex:1.5;"><label>Protocolos</label><div class="protocol-group">';
+        var bPr = typeof b.pr === 'string' ? JSON.parse(b.pr || '[]') : (b.pr || []);
+        for(var pr=0; pr<prot_options.length; pr++) {
+            h += '<button class="prot-btn' + (bPr.indexOf(prot_options[pr]) > -1 ? ' on' : '') + '" onclick="tgPr('+b.n+',\''+bSetor+'\',\''+esc(prot_options[pr])+'\')">' + prot_options[pr] + '</button>';
+        }
+        h += '</div></div>';
+
+        h += '<div class="detail-col" style="flex:0.8;"><label>Destino</label><select id="df_'+pfx+'" class="input-padrao" onchange="svC('+b.n+',\''+bSetor+'\')">';
         for(var d=0; d<df_options.length; d++) h += '<option value="'+df_options[d].val+'" '+(b.df===df_options[d].val?'selected':'')+'>'+df_options[d].txt+'</option>';
         h += '</select></div>';
         h += '</div>'; // Fecha Linha 1
 
-        // Linha 2 (Textos Livres)
+        // Linha 2 (Textos Livres e Especialidades)
         h += '<div class="bed-row">';
-        h += '<div class="detail-col col-origem"><label>Origem</label><input id="ori_'+pfx+'" class="input-padrao" value="'+esc(b.ori)+'" onblur="svC('+b.n+',\''+bSetor+'\')"></div>';
-        h += '<div class="detail-col col-diag"><label>Diagnóstico / HD</label><textarea id="dg_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.dg)+'</textarea></div>';
-        h += '<div class="detail-col col-scores"><label>Scores Clínicos</label><textarea id="sc_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.sc)+'</textarea></div>';
-        h += '<div class="detail-col col-exames"><label>Exames Solicitados</label><textarea id="ex_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.ex)+'</textarea></div>';
-        h += '<div class="detail-col col-pendencia"><label>Condutas / Pendências</label><textarea id="cd_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.cd)+'</textarea></div>';
-        h += '</div>'; // Fecha Linha 2
+        h += '<div class="detail-col" style="flex:1.5;"><label>Diagnóstico / HD</label><textarea id="dg_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.dg)+'</textarea></div>';
+        h += '<div class="detail-col" style="flex:1;"><label>Scores Clínicos</label><textarea id="sc_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.sc)+'</textarea></div>';
+        h += '<div class="detail-col" style="flex:1.5;"><label>Exames Solicitados</label><textarea id="ex_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.ex)+'</textarea></div>';
+        h += '<div class="detail-col" style="flex:1.5;"><label>Condutas / Pendências</label><textarea id="cd_'+pfx+'" onblur="svC('+b.n+',\''+bSetor+'\')">'+esc(b.cd)+'</textarea></div>';
 
-        // Linha 3 (Tags)
-        h += '<div class="bed-row">';
-        h += '<div class="detail-col col-protocolos"><label>Protocolos</label><div class="tags-edit">';
-        var bPr = typeof b.pr === 'string' ? JSON.parse(b.pr || '[]') : (b.pr || []);
-        for(var pr=0; pr<prot_options.length; pr++) {
-            h += '<div class="tag-edit' + (bPr.indexOf(prot_options[pr]) > -1 ? ' on' : '') + '" onclick="tgPr('+b.n+',\''+bSetor+'\',\''+esc(prot_options[pr])+'\')">' + prot_options[pr] + '</div>';
-        }
-        h += '</div></div>';
-
-        h += '<div class="detail-col col-especialidades"><label>Especialidades</label><div class="input-group-add">';
+        h += '<div class="detail-col" style="flex:1.2;"><label>Especialidades</label><div class="input-group-add">';
         h += '<select class="input-padrao" id="sel_es_'+pfx+'"><option value="">Selecione...</option>';
         for(var e=0; e<esp_options.length; e++) { h += '<option value="'+esp_options[e]+'">'+esp_options[e]+'</option>'; }
         h += '</select><button class="btn-add-tag" onclick="addEs('+b.n+',\''+bSetor+'\')">+</button></div>';
@@ -365,7 +368,7 @@ function rnd() {
         var bEs = []; try { bEs = JSON.parse(b.es || '[]'); } catch(err) { if(b.es && b.es !== '') bEs = [b.es]; }
         for(var t=0; t<bEs.length; t++) { h += '<div class="tag-selected">' + bEs[t] + ' <span class="tag-remove" onclick="rmEs('+b.n+',\''+bSetor+'\',\''+esc(bEs[t])+'\')">✕</span></div>'; }
         h += '</div></div>';
-        h += '</div>'; // Fecha Linha 3
+        h += '</div>'; // Fecha Linha 2
 
         h += '</div>'; // Fecha bed-body
         h += '</div>'; // Fecha bed-card
@@ -378,14 +381,13 @@ function rnd() {
 function svC(n, setor) {
     var b = gb(n, setor); if(!b) return;
     var pfx = setor + '_' + n;
-    b.pac = g('pac_'+pfx).value; b.idade = g('idade_'+pfx).value; 
+    b.pac = g('pac_'+pfx).value; b.idade = g('idade_'+pfx).value; b.ori = g('ori_'+pfx).value;
     b.cv = g('cv_'+pfx).value; b.lc = g('lc_'+pfx).value; 
     var admEl = g('adm_'+pfx); if(admEl && admEl.value) b.adm = new Date(admEl.value).toISOString();
     
     if(g('pd_sel_'+pfx)) b.pd_sel = g('pd_sel_'+pfx).value;
     if(g('df_'+pfx)) b.df = g('df_'+pfx).value;
 
-    var oriEl = g('ori_'+pfx); if(oriEl) b.ori = oriEl.value;
     var dgEl = g('dg_'+pfx); if(dgEl) b.dg = dgEl.value;
     var scEl = g('sc_'+pfx); if(scEl) b.sc = scEl.value; 
     var exEl = g('ex_'+pfx); if(exEl) b.ex = exEl.value;
@@ -501,12 +503,34 @@ function tmrs() {
     for(var i=0; i<ST.length; i++) {
         var b = ST[i];
         if(!b.adm) continue;
-        var hh = hD(b.adm);
         var pfx = (b.setor || 'emergencia') + '_' + b.n;
         var admEl = document.getElementById('adm_'+pfx);
+        
         if(admEl && admEl.parentElement) {
+            var hh = hD(b.adm);
             var permText = admEl.parentElement.querySelector('.perm-text-mini');
             if(permText) permText.innerHTML = hh.txt;
+
+            // Lógica da Barra de Progresso
+            var progEl = document.getElementById('prog_'+pfx);
+            if(progEl) {
+                var d = new Date(b.adm), n = new Date(), diff = n - d;
+                if(diff < 0) diff = 0;
+                var hours = diff / 3600000;
+                
+                // Calcula % baseado em 30 horas
+                var pct = (hours / 30) * 100;
+                if(pct > 100) pct = 100;
+                progEl.style.width = pct + '%';
+
+                // Cores do gatilho clínico
+                var cor = '#3b82f6'; // Azul (< 10h)
+                if (hours >= 30) cor = '#ef4444'; // Vermelho (>= 30h)
+                else if (hours >= 20) cor = '#f97316'; // Laranja (20h-30h)
+                else if (hours >= 10) cor = '#eab308'; // Amarelo (10h-20h)
+                
+                progEl.style.backgroundColor = cor;
+            }
         }
     }
 }
@@ -618,7 +642,7 @@ function iniciarBancoDeDados() {
 }
 
 window.addEventListener('beforeunload', function (e) { saveAll(); });
-setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 30000);
+setInterval(function() { upDateTime(); if(ST.length > 0) tmrs(); }, 1000); // Roda a cada segundo para atualizar a barra suavemente
 upDateTime();
 </script>
 </body>
